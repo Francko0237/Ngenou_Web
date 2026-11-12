@@ -1,115 +1,127 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 
-/// Widget de présentation double téléphone en composition décalée
-/// Reproduit l'esthétique de la référence : fond sombre, deux mobiles
-/// légèrement inclinés à des profondeurs différentes avec halos de lumière.
+/// Widget de présentation double smartphone réaliste en composition décalée
+/// Reproduit fidèlement le design de référence :
+/// - Téléphone gauche au premier plan (incliné -10° à -12°, avec ombre portée)
+/// - Téléphone droit en arrière-plan (incliné +6° à +8°)
+/// - Cadre matériel réaliste (châssis métallique, caméra poinçon, boutons latéraux)
+/// - Halos lumineux d'ambiance (or chaud et cyan) sur fond sombre
 class DualPhoneMockup extends StatelessWidget {
-  /// Chemin vers la capture d'écran du téléphone arrière (gauche)
-  final String backImagePath;
-
-  /// Chemin vers la capture d'écran du téléphone avant (droit)
+  /// Capture d'écran du téléphone avant (gauche, premier plan)
   final String frontImagePath;
 
-  /// Largeur totale de la composition (responsive)
+  /// Capture d'écran du téléphone arrière (droit, arrière-plan)
+  final String backImagePath;
+
+  /// Largeur totale souhaitée de la composition
   final double width;
+
+  /// Couleur d'accentuation pour l'ambiance lumineuse
+  final Color? glowColor;
 
   const DualPhoneMockup({
     super.key,
-    required this.backImagePath,
     required this.frontImagePath,
-    this.width = 420,
+    required this.backImagePath,
+    this.width = 440,
+    this.glowColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    final phoneWidth = width * 0.52;
-    final phoneHeight = phoneWidth * 2.08;
-    final backPhoneWidth = width * 0.46;
-    final backPhoneHeight = backPhoneWidth * 2.08;
+    // Proportions basées sur le cadre matériel (562 x 1115 -> ratio ~1.984)
+    final phoneWidth = width * 0.55;
+    final phoneHeight = phoneWidth * 1.984;
+    final totalHeight = phoneHeight + 70;
+    final accentGlow = glowColor ?? AppColors.gold;
 
     return SizedBox(
       width: width,
-      height: phoneHeight + 60,
+      height: totalHeight,
       child: Stack(
         clipBehavior: Clip.none,
+        alignment: Alignment.center,
         children: [
-          // ── Halo arrière gold (derrière le téléphone gauche) ──────────────
+          // ── 1. Halo lumineux central chaud (derrière les deux téléphones) ──
           Positioned(
-            left: width * 0.05,
-            top: 40,
-            child: Container(
-              width: backPhoneWidth * 1.4,
-              height: backPhoneHeight * 0.9,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.gold.withValues(alpha: 0.22),
-                    AppColors.gold.withValues(alpha: 0.06),
-                    Colors.transparent,
-                  ],
-                  stops: const [0.0, 0.5, 1.0],
-                ),
-              ),
-            ),
-          ),
-
-          // ── Halo avant cyan (derrière le téléphone droit) ─────────────────
-          Positioned(
-            right: width * 0.00,
+            left: width * 0.12,
             top: 20,
-            child: Container(
-              width: phoneWidth * 1.3,
-              height: phoneHeight * 0.85,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.cyan.withValues(alpha: 0.28),
-                    AppColors.cyan.withValues(alpha: 0.08),
-                    Colors.transparent,
-                  ],
-                  stops: const [0.0, 0.5, 1.0],
+            child: IgnorePointer(
+              child: Container(
+                width: width * 0.76,
+                height: phoneHeight * 0.85,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      accentGlow.withValues(alpha: 0.28),
+                      accentGlow.withValues(alpha: 0.08),
+                      Colors.transparent,
+                    ],
+                    stops: const [0.0, 0.45, 1.0],
+                  ),
                 ),
               ),
             ),
           ),
 
-          // ── Téléphone ARRIÈRE (gauche, légèrement incliné, recouvert) ─────
+          // ── 2. Halo d'accentuation cyan discret en bas à droite ───────────
           Positioned(
-            left: 0,
-            top: 30,
-            child: Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001)
-                ..rotateY(-0.14)
-                ..rotateZ(-0.13),
-              child: _PhoneFrame(
-                imagePath: backImagePath,
-                width: backPhoneWidth,
-                height: backPhoneHeight,
-                glowColor: AppColors.gold,
+            right: width * 0.02,
+            bottom: 30,
+            child: IgnorePointer(
+              child: Container(
+                width: phoneWidth * 1.2,
+                height: phoneHeight * 0.65,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      AppColors.cyan.withValues(alpha: 0.20),
+                      AppColors.cyan.withValues(alpha: 0.04),
+                      Colors.transparent,
+                    ],
+                    stops: const [0.0, 0.5, 1.0],
+                  ),
+                ),
               ),
             ),
           ),
 
-          // ── Téléphone AVANT (droit, en avant-plan) ────────────────────────
+          // ── 3. Téléphone ARRIÈRE (droit, en second plan, incliné +8°) ─────
           Positioned(
-            right: 0,
-            top: 0,
+            right: width * 0.01,
+            top: 15,
             child: Transform(
               alignment: Alignment.center,
               transform: Matrix4.identity()
                 ..setEntry(3, 2, 0.001)
                 ..rotateY(0.08)
-                ..rotateZ(0.09),
-              child: _PhoneFrame(
+                ..rotateZ(0.12),
+              child: _RealisticPhone(
+                imagePath: backImagePath,
+                width: phoneWidth,
+                height: phoneHeight,
+                isElevated: false,
+              ),
+            ),
+          ),
+
+          // ── 4. Téléphone AVANT (gauche, au premier plan, incliné -11°) ───
+          Positioned(
+            left: width * 0.01,
+            top: 40,
+            child: Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.identity()
+                ..setEntry(3, 2, 0.001)
+                ..rotateY(-0.10)
+                ..rotateZ(-0.18),
+              child: _RealisticPhone(
                 imagePath: frontImagePath,
                 width: phoneWidth,
                 height: phoneHeight,
-                glowColor: AppColors.cyan,
                 isElevated: true,
               ),
             ),
@@ -120,153 +132,141 @@ class DualPhoneMockup extends StatelessWidget {
   }
 }
 
-/// Cadre téléphone individuel avec rendu réaliste
-class _PhoneFrame extends StatelessWidget {
+/// Rendu réaliste d'un smartphone moderne avec cadre matériel et reflets
+class _RealisticPhone extends StatelessWidget {
   final String imagePath;
   final double width;
   final double height;
-  final Color glowColor;
   final bool isElevated;
 
-  const _PhoneFrame({
+  const _RealisticPhone({
     required this.imagePath,
     required this.width,
     required this.height,
-    required this.glowColor,
     this.isElevated = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final radius = width * 0.11;
+    // Ratios d'inset d'écran calculés d'après assets/screenshots/phone_frame.png
+    // (562 de large, 1115 de haut, écran interne: gauche 14px, droite 24px, haut 22px, bas 22px)
+    final leftInset = width * (14.0 / 562.0);
+    final rightInset = width * (24.0 / 562.0);
+    final topInset = height * (22.0 / 1115.0);
+    final bottomInset = height * (22.0 / 1115.0);
+    final screenRadius = width * 0.088;
 
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: const Color(0xFF0A1020),
-        borderRadius: BorderRadius.circular(radius),
-        // Cadre externe du téléphone (bord biseau léger)
-        border: Border.all(
-          color: const Color(0xFF2A3D5A),
-          width: isElevated ? 3.0 : 2.5,
-        ),
+        borderRadius: BorderRadius.circular(screenRadius),
         boxShadow: [
-          // Ombre principale réaliste
+          // Ombre principale (au sol et sur le téléphone en arrière-plan)
           BoxShadow(
-            color: Colors.black.withValues(alpha: isElevated ? 0.7 : 0.55),
-            blurRadius: isElevated ? 48 : 32,
-            spreadRadius: isElevated ? -6 : -8,
-            offset: Offset(isElevated ? 12 : 8, isElevated ? 24 : 16),
+            color: Colors.black.withValues(alpha: isElevated ? 0.72 : 0.52),
+            blurRadius: isElevated ? 42 : 28,
+            spreadRadius: isElevated ? -3 : -6,
+            offset: Offset(isElevated ? 12 : 8, isElevated ? 22 : 14),
           ),
-          // Lueur colorée en bas
-          BoxShadow(
-            color: glowColor.withValues(alpha: isElevated ? 0.30 : 0.18),
-            blurRadius: isElevated ? 60 : 40,
-            spreadRadius: isElevated ? -8 : -12,
-            offset: Offset(0, isElevated ? 32 : 20),
-          ),
+          // Halo ambiant sous le téléphone
+          if (isElevated)
+            BoxShadow(
+              color: AppColors.cyan.withValues(alpha: 0.16),
+              blurRadius: 40,
+              spreadRadius: -8,
+              offset: const Offset(4, 16),
+            ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(radius - 2),
-        child: Stack(
-          children: [
-            // ── Screenshot ──────────────────────────────────────────────────
-            Positioned.fill(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // ── A. Fond d'écran sombre ──────────────────────────────────────
+          Padding(
+            padding: EdgeInsets.fromLTRB(leftInset, topInset, rightInset, bottomInset),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF0A101D),
+                borderRadius: BorderRadius.circular(screenRadius - 2),
+              ),
+            ),
+          ),
+
+          // ── B. Image d'écran de l'application ───────────────────────────
+          Positioned(
+            left: leftInset,
+            top: topInset,
+            right: rightInset,
+            bottom: bottomInset,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(screenRadius - 2),
               child: Image.asset(
                 imagePath,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, _) => Container(
-                  color: const Color(0xFF0D1A2E),
+                  color: const Color(0xFF0D172A),
                   child: const Center(
                     child: Icon(
                       Icons.image_not_supported_rounded,
-                      color: Color(0xFF3A5080),
-                      size: 32,
+                      color: Color(0xFF384E75),
+                      size: 28,
                     ),
                   ),
                 ),
               ),
             ),
+          ),
 
-            // ── Reflet de vitre (gradient lumineux en haut) ─────────────────
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              height: height * 0.35,
+          // ── C. Reflet de verre supérieur (dégradé subtil de lumière) ────
+          Positioned(
+            left: leftInset,
+            top: topInset,
+            right: rightInset,
+            height: height * 0.42,
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(screenRadius - 2),
+                topRight: Radius.circular(screenRadius - 2),
+              ),
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Colors.white.withValues(alpha: 0.08),
+                      Colors.white.withValues(alpha: 0.13),
+                      Colors.white.withValues(alpha: 0.03),
                       Colors.transparent,
                     ],
+                    stops: const [0.0, 0.35, 0.75],
                   ),
                 ),
               ),
             ),
+          ),
 
-            // ── Encoche Dynamic Island ──────────────────────────────────────
-            Positioned(
-              top: 8,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  width: width * 0.26,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.85),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Container(
-                      width: 5,
-                      height: 5,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF0F1E38),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+          // ── D. Cadre matériel réaliste du téléphone (châssis métallique) ─
+          IgnorePointer(
+            child: Image.asset(
+              'assets/screenshots/phone_frame.png',
+              fit: BoxFit.fill,
+              errorBuilder: (context, error, _) => _fallbackFrame(screenRadius),
             ),
+          ),
+        ],
+      ),
+    );
+  }
 
-            // ── Barre de navigation inférieure ──────────────────────────────
-            Positioned(
-              bottom: 7,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  width: width * 0.32,
-                  height: 3.5,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.45),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-            ),
-
-            // ── Bordure interne subtile (effet biseauté) ────────────────────
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(radius - 2),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.06),
-                    width: 1,
-                  ),
-                ),
-              ),
-            ),
-          ],
+  /// Cadre de secours vectoriel au cas où l'image de frame est indisponible
+  Widget _fallbackFrame(double radius) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(radius),
+        border: Border.all(
+          color: const Color(0xFF2B3D5E),
+          width: 3,
         ),
       ),
     );

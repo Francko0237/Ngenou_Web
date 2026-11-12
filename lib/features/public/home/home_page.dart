@@ -236,13 +236,14 @@ class _HeroSection extends StatelessWidget {
 
   Widget _buildVisual(BuildContext context) {
     final isMobile = Responsive.isMobile(context);
-    final compositionWidth = isMobile ? 340.0 : 460.0;
+    final compositionWidth = isMobile ? 320.0 : 440.0;
 
     return Center(
       child: DualPhoneMockup(
-        backImagePath: 'assets/screenshots/Dashboard.png',
-        frontImagePath: 'assets/screenshots/Ngenou2.png',
+        frontImagePath: 'assets/screenshots/Dashboard.png',
+        backImagePath: 'assets/screenshots/Cours.png',
         width: compositionWidth,
+        glowColor: AppColors.gold,
       ),
     );
   }
@@ -303,8 +304,9 @@ class _ShowcaseSection extends StatelessWidget {
         'Quiz rapides et historique des discussions sauvegardé',
         'Nécessite une connexion Internet',
       ],
-      screenshot: 'assets/screenshots/tuteur_chat.png',
-      caption: 'Ngenou Assistant propose un quiz rapide en algorithmique',
+      frontScreenshot: 'assets/screenshots/Ngenou2.png',
+      backScreenshot: 'assets/screenshots/Cours.png',
+      caption: 'Ngenou Assistant en dialogue interactif avec cours structuré',
     ),
     _ShowcaseTab(
       title: 'Défis quotidiens et quiz',
@@ -317,8 +319,9 @@ class _ShowcaseSection extends StatelessWidget {
         'QCM interactifs avec explication immédiate',
         'Badges et points d\'expérience (XP)',
       ],
-      screenshot: 'assets/screenshots/defis_quiz.png',
-      caption: 'Défi du jour : QCM d\'algorithmique avec score immédiat',
+      frontScreenshot: 'assets/screenshots/Defis1.png',
+      backScreenshot: 'assets/screenshots/Defis2.png',
+      caption: 'Défi du jour : QCM interactif avec score et correction immédiate',
     ),
     _ShowcaseTab(
       title: 'Extensions Ngenou Assets',
@@ -331,7 +334,8 @@ class _ShowcaseSection extends StatelessWidget {
         'Des outils pour le primaire, le secondaire et le supérieur',
         'Classées par catégorie : outils de développement, sciences et maths',
       ],
-      screenshot: 'assets/screenshots/extensions_assets.png',
+      frontScreenshot: 'assets/screenshots/Assets1.png',
+      backScreenshot: 'assets/screenshots/Assets2.png',
       caption: 'Catalogue d\'extensions légères installables en un clic',
     ),
     _ShowcaseTab(
@@ -345,8 +349,9 @@ class _ShowcaseSection extends StatelessWidget {
         'Alarmes et notifications d\'étude à l\'heure prévue',
         'Export et impression en PDF en un clic',
       ],
-      screenshot: 'assets/screenshots/planning_emploi_du_temps.png',
-      caption: 'Emploi du temps 7 jours & gestion des créneaux',
+      frontScreenshot: 'assets/screenshots/EmploieDetemps1.png',
+      backScreenshot: 'assets/screenshots/EmploieDEtemps2.png',
+      caption: 'Emploi du temps hebdomadaire & gestion des alarmes',
     ),
   ];
 
@@ -406,11 +411,26 @@ class _ShowcaseSection extends StatelessWidget {
                     child: Center(
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),
-                        child: PhoneMockup(
-                          key: ValueKey(activeTab.screenshot),
-                          imagePath: activeTab.screenshot,
-                          caption: activeTab.caption,
-                          width: 280,
+                        child: Column(
+                          key: ValueKey(activeTab.frontScreenshot),
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            DualPhoneMockup(
+                              frontImagePath: activeTab.frontScreenshot,
+                              backImagePath: activeTab.backScreenshot,
+                              width: 380,
+                              glowColor: activeTab.accent,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              activeTab.caption,
+                              style: const TextStyle(
+                                color: AppColors.textMuted,
+                                fontSize: 13,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -430,10 +450,25 @@ class _ShowcaseSection extends StatelessWidget {
                         if (isSelected) ...[
                           const SizedBox(height: 24),
                           Center(
-                            child: PhoneMockup(
-                              imagePath: tab.screenshot,
-                              caption: tab.caption,
-                              width: 250,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                DualPhoneMockup(
+                                  frontImagePath: tab.frontScreenshot,
+                                  backImagePath: tab.backScreenshot,
+                                  width: 290,
+                                  glowColor: tab.accent,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  tab.caption,
+                                  style: const TextStyle(
+                                    color: AppColors.textMuted,
+                                    fontSize: 12,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 32),
@@ -552,7 +587,8 @@ class _ShowcaseTab {
   final Color accent;
   final String description;
   final List<String> features;
-  final String screenshot;
+  final String frontScreenshot;
+  final String backScreenshot;
   final String caption;
 
   const _ShowcaseTab({
@@ -561,7 +597,8 @@ class _ShowcaseTab {
     required this.accent,
     required this.description,
     required this.features,
-    required this.screenshot,
+    required this.frontScreenshot,
+    required this.backScreenshot,
     required this.caption,
   });
 }
@@ -659,7 +696,7 @@ class _BentoFeaturesSection extends StatelessWidget {
                           title: 'Une interface claire, des premiers pas guidés',
                           body:
                               'Mode sombre, badges de progression et bulles d\'aide que vous pouvez relancer à tout moment pour découvrir l\'application sans stress.',
-                          screenshot: 'assets/screenshots/defis_quiz.png',
+                          screenshot: 'assets/screenshots/Dashboard.png',
                         ),
                       ),
                     ],
@@ -701,7 +738,7 @@ class _BentoFeaturesSection extends StatelessWidget {
                     title: 'Une interface claire, des premiers pas guidés',
                     body:
                         'Mode sombre, badges de progression et bulles d\'aide que vous pouvez relancer à tout moment pour découvrir l\'application sans stress.',
-                    screenshot: 'assets/screenshots/defis_quiz.png',
+                    screenshot: 'assets/screenshots/Dashboard.png',
                   ),
                 ],
               ),
