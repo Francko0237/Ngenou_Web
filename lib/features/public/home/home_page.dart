@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/download_button.dart';
 import '../../../core/widgets/gradient_text.dart';
+import '../../../core/widgets/dual_phone_mockup.dart';
 import '../../../core/widgets/phone_mockup.dart';
 import '../../../core/widgets/responsive_layout.dart';
 import '../../../core/widgets/site_footer.dart';
@@ -234,40 +235,14 @@ class _HeroSection extends StatelessWidget {
   }
 
   Widget _buildVisual(BuildContext context) {
+    final isMobile = Responsive.isMobile(context);
+    final compositionWidth = isMobile ? 340.0 : 460.0;
+
     return Center(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Halo de lumière
-          Container(
-            width: 380,
-            height: 380,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  AppColors.cyan.withValues(alpha: 0.25),
-                  AppColors.gold.withValues(alpha: 0.08),
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
-          // Logo en arrière plan subtil
-          Opacity(
-            opacity: 0.12,
-            child: Image.asset(
-              'assets/images/logo.png',
-              width: 320,
-              height: 320,
-            ),
-          ),
-          // Smartphone avec capture
-          const PhoneMockup(
-            imagePath: 'assets/screenshots/tuteur_chat.png',
-            width: 270,
-          ),
-        ],
+      child: DualPhoneMockup(
+        backImagePath: 'assets/screenshots/Dashboard.png',
+        frontImagePath: 'assets/screenshots/Ngenou2.png',
+        width: compositionWidth,
       ),
     );
   }
