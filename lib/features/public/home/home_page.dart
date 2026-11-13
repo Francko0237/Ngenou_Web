@@ -54,9 +54,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: SiteNavbar(
-        onSectionSelected: _scrollToSection,
-      ),
+      appBar: SiteNavbar(onSectionSelected: _scrollToSection),
       body: SingleChildScrollView(
         controller: _scrollController,
         child: Column(
@@ -76,13 +74,8 @@ class _HomePageState extends State<HomePage> {
               key: _featuresKey,
               disableAnimations: disableAnimations,
             ),
-            _DownloadCtaSection(
-              disableAnimations: disableAnimations,
-            ),
-            _FaqSection(
-              key: _faqKey,
-              disableAnimations: disableAnimations,
-            ),
+            _DownloadCtaSection(disableAnimations: disableAnimations),
+            _FaqSection(key: _faqKey, disableAnimations: disableAnimations),
             const SiteFooter(),
           ],
         ),
@@ -148,7 +141,9 @@ class _HeroSectionState extends State<_HeroSection>
               child: IgnorePointer(
                 child: CustomPaint(
                   painter: _AmbientGlowPainter(
-                    progress: widget.disableAnimations ? 0.5 : _ambientAnimation.value,
+                    progress: widget.disableAnimations
+                        ? 0.5
+                        : _ambientAnimation.value,
                   ),
                 ),
               ),
@@ -160,9 +155,7 @@ class _HeroSectionState extends State<_HeroSection>
         );
       },
       child: Container(
-        constraints: BoxConstraints(
-          minHeight: isMobile ? 0 : 680,
-        ),
+        constraints: BoxConstraints(minHeight: isMobile ? 0 : 680),
         child: ResponsiveContainer(
           padding: EdgeInsets.symmetric(
             horizontal: Responsive.horizontalPadding(context),
@@ -195,40 +188,41 @@ class _HeroSectionState extends State<_HeroSection>
     final badgeWidget = widget.disableAnimations
         ? _buildBadge()
         : _buildBadge()
-            .animate()
-            .fadeIn(duration: 400.ms, delay: 100.ms)
-            .slideY(begin: -0.2, end: 0, duration: 400.ms);
+              .animate()
+              .fadeIn(duration: 400.ms, delay: 100.ms)
+              .slideY(begin: -0.2, end: 0, duration: 400.ms);
 
     final titleWidget = widget.disableAnimations
         ? _buildTitle(isMobile)
         : _buildTitle(isMobile)
-            .animate()
-            .fadeIn(duration: 600.ms, delay: 250.ms, curve: Curves.easeOut)
-            .slideY(begin: 0.08, end: 0, duration: 600.ms, delay: 250.ms);
+              .animate()
+              .fadeIn(duration: 600.ms, delay: 250.ms, curve: Curves.easeOut)
+              .slideY(begin: 0.08, end: 0, duration: 600.ms, delay: 250.ms);
 
     final descWidget = widget.disableAnimations
         ? _buildDesc(isMobile)
         : _buildDesc(isMobile)
-            .animate()
-            .fadeIn(duration: 500.ms, delay: 450.ms)
-            .slideY(begin: 0.06, end: 0, duration: 500.ms, delay: 450.ms);
+              .animate()
+              .fadeIn(duration: 500.ms, delay: 450.ms)
+              .slideY(begin: 0.06, end: 0, duration: 500.ms, delay: 450.ms);
 
     final ctaWidget = widget.disableAnimations
         ? _buildCta(isMobile)
         : _buildCta(isMobile)
-            .animate()
-            .fadeIn(duration: 500.ms, delay: 600.ms)
-            .slideY(begin: 0.06, end: 0, duration: 500.ms, delay: 600.ms);
+              .animate()
+              .fadeIn(duration: 500.ms, delay: 600.ms)
+              .slideY(begin: 0.06, end: 0, duration: 500.ms, delay: 600.ms);
 
     final specsWidget = widget.disableAnimations
         ? _buildSpecs(isMobile)
-        : _buildSpecs(isMobile)
-            .animate()
-            .fadeIn(duration: 500.ms, delay: 750.ms);
+        : _buildSpecs(
+            isMobile,
+          ).animate().fadeIn(duration: 500.ms, delay: 750.ms);
 
     return Column(
-      crossAxisAlignment:
-          isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      crossAxisAlignment: isMobile
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.start,
       children: [
         badgeWidget,
         const SizedBox(height: 20),
@@ -394,17 +388,20 @@ class _AmbientGlowPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // Halo or — coin supérieur droit
     final paintGold = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          AppColors.gold.withValues(alpha: 0.14 + progress * 0.07),
-          AppColors.gold.withValues(alpha: 0.04),
-          Colors.transparent,
-        ],
-        stops: const [0.0, 0.4, 1.0],
-      ).createShader(Rect.fromCircle(
-        center: Offset(size.width * 0.85, -size.height * 0.1),
-        radius: size.width * 0.5,
-      ));
+      ..shader =
+          RadialGradient(
+            colors: [
+              AppColors.gold.withValues(alpha: 0.14 + progress * 0.07),
+              AppColors.gold.withValues(alpha: 0.04),
+              Colors.transparent,
+            ],
+            stops: const [0.0, 0.4, 1.0],
+          ).createShader(
+            Rect.fromCircle(
+              center: Offset(size.width * 0.85, -size.height * 0.1),
+              radius: size.width * 0.5,
+            ),
+          );
     canvas.drawCircle(
       Offset(size.width * 0.85, -size.height * 0.1),
       size.width * 0.5,
@@ -413,17 +410,20 @@ class _AmbientGlowPainter extends CustomPainter {
 
     // Halo cyan — coin inférieur gauche
     final paintCyan = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          AppColors.cyan.withValues(alpha: 0.10 + (1 - progress) * 0.06),
-          AppColors.cyan.withValues(alpha: 0.03),
-          Colors.transparent,
-        ],
-        stops: const [0.0, 0.4, 1.0],
-      ).createShader(Rect.fromCircle(
-        center: Offset(-size.width * 0.1, size.height * 1.1),
-        radius: size.width * 0.55,
-      ));
+      ..shader =
+          RadialGradient(
+            colors: [
+              AppColors.cyan.withValues(alpha: 0.10 + (1 - progress) * 0.06),
+              AppColors.cyan.withValues(alpha: 0.03),
+              Colors.transparent,
+            ],
+            stops: const [0.0, 0.4, 1.0],
+          ).createShader(
+            Rect.fromCircle(
+              center: Offset(-size.width * 0.1, size.height * 1.1),
+              radius: size.width * 0.55,
+            ),
+          );
     canvas.drawCircle(
       Offset(-size.width * 0.1, size.height * 1.1),
       size.width * 0.55,
@@ -746,9 +746,7 @@ class _ShowcaseSection extends StatelessWidget {
     if (disableAnimations) return content;
 
     return content
-        .animate(
-          onPlay: (c) => c.forward(),
-        )
+        .animate(onPlay: (c) => c.forward())
         .fadeIn(duration: 600.ms, curve: Curves.easeOut)
         .slideY(begin: 0.04, end: 0, duration: 600.ms);
   }
@@ -771,8 +769,9 @@ class _ShowcaseSection extends StatelessWidget {
                   duration: const Duration(milliseconds: 250),
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: tab.accent
-                        .withValues(alpha: isSelected ? 0.20 : 0.12),
+                    color: tab.accent.withValues(
+                      alpha: isSelected ? 0.20 : 0.12,
+                    ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(tab.icon, color: tab.accent, size: 20),
@@ -818,8 +817,11 @@ class _ShowcaseSection extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.check_circle_rounded,
-                          color: tab.accent, size: 16),
+                      Icon(
+                        Icons.check_circle_rounded,
+                        color: tab.accent,
+                        size: 16,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -871,10 +873,7 @@ class _ShowcaseTab {
 class _BentoFeaturesSection extends StatelessWidget {
   final bool disableAnimations;
 
-  const _BentoFeaturesSection({
-    super.key,
-    required this.disableAnimations,
-  });
+  const _BentoFeaturesSection({super.key, required this.disableAnimations});
 
   @override
   Widget build(BuildContext context) {
@@ -895,74 +894,83 @@ class _BentoFeaturesSection extends StatelessWidget {
 
             // Bento Layout
             if (isDesktop)
-              Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 6,
-                        child: _BentoCard(
-                          icon: Icons.bolt_rounded,
-                          accent: AppColors.cyan,
-                          title: 'Vos cours restent avec vous',
-                          body:
-                              'Cours, synthèses, planning et tâches sont enregistrés sur votre téléphone. Révisez dans le bus ou en coupure de réseau : seul le tuteur IA a besoin d\'une connexion.',
-                          extraWidget: const _SyncNodeVisual(),
-                          disableAnimations: disableAnimations,
-                          delay: 100,
-                        ),
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Colonne gauche (flex 7) : Carte large haut + 2 cartes côte-à-côte bas
+                    Expanded(
+                      flex: 7,
+                      child: Column(
+                        children: [
+                          _BentoCard(
+                            icon: Icons.bolt_rounded,
+                            accent: AppColors.cyan,
+                            title: 'Vos cours restent avec vous',
+                            body:
+                                'Cours, synthèses, planning et tâches sont enregistrés sur votre téléphone. Révisez dans le bus ou en coupure de réseau : seul le tuteur IA a besoin d\'une connexion.',
+                            extraWidget: const _SyncNodeVisual(),
+                            disableAnimations: disableAnimations,
+                            delay: 100,
+                          ),
+                          const SizedBox(height: 20),
+                          Expanded(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(
+                                  child: _BentoCard(
+                                    icon: Icons.shield_rounded,
+                                    accent: AppColors.cyan,
+                                    title: 'Vos données restent les vôtres',
+                                    body:
+                                        'Dès que vous êtes en ligne, vos données sont sauvegardées de façon chiffrée et rattachées à votre seul compte. Vous pouvez les supprimer à tout moment.',
+                                    extraWidget: const _SecurityBadgeVisual(),
+                                    disableAnimations: disableAnimations,
+                                    delay: 200,
+                                    isFullHeight: true,
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                Expanded(
+                                  child: _BentoCard(
+                                    icon: Icons.lightbulb_rounded,
+                                    accent: AppColors.gold,
+                                    title: 'Il questionne, vous trouvez',
+                                    body:
+                                        'Le tuteur ne fait pas vos devoirs : il pose les questions qui font venir le déclic.',
+                                    quote: '« C\'est en se trompant qu\'on apprend ! »',
+                                    disableAnimations: disableAnimations,
+                                    delay: 300,
+                                    isFullHeight: true,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        flex: 4,
-                        child: _BentoCard(
-                          icon: Icons.shield_rounded,
-                          accent: AppColors.cyan,
-                          title: 'Vos données restent les vôtres',
-                          body:
-                              'Dès que vous êtes en ligne, vos données sont sauvegardées de façon chiffrée et rattachées à votre seul compte. Vous pouvez les supprimer à tout moment.',
-                          disableAnimations: disableAnimations,
-                          delay: 200,
-                        ),
+                    ),
+                    const SizedBox(width: 20),
+
+                    // Colonne droite (flex 5) : Carte vitrine smartphone pleine hauteur
+                    Expanded(
+                      flex: 5,
+                      child: _BentoCard(
+                        icon: Icons.phone_android_rounded,
+                        accent: AppColors.gold,
+                        title:
+                            'Une interface claire, des premiers pas guidés',
+                        body:
+                            'Mode sombre, badges de progression et bulles d\'aide que vous pouvez relancer à tout moment pour découvrir l\'application sans stress.',
+                        screenshot: 'assets/screenshots/Dashboard.png',
+                        disableAnimations: disableAnimations,
+                        delay: 400,
+                        isFullHeight: true,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 4,
-                        child: _BentoCard(
-                          icon: Icons.lightbulb_rounded,
-                          accent: AppColors.gold,
-                          title: 'Il questionne, vous trouvez',
-                          body:
-                              'Le tuteur ne fait pas vos devoirs : il pose les questions qui font venir le déclic.',
-                          quote: '« C\'est en se trompant qu\'on apprend ! »',
-                          disableAnimations: disableAnimations,
-                          delay: 300,
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        flex: 6,
-                        child: _BentoCard(
-                          icon: Icons.phone_android_rounded,
-                          accent: AppColors.gold,
-                          title:
-                              'Une interface claire, des premiers pas guidés',
-                          body:
-                              'Mode sombre, badges de progression et bulles d\'aide que vous pouvez relancer à tout moment pour découvrir l\'application sans stress.',
-                          screenshot: 'assets/screenshots/Dashboard.png',
-                          disableAnimations: disableAnimations,
-                          delay: 400,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               )
             else
               Column(
@@ -984,6 +992,7 @@ class _BentoFeaturesSection extends StatelessWidget {
                     title: 'Vos données restent les vôtres',
                     body:
                         'Dès que vous êtes en ligne, vos données sont sauvegardées de façon chiffrée et rattachées à votre seul compte. Vous pouvez les supprimer à tout moment.',
+                    extraWidget: const _SecurityBadgeVisual(),
                     disableAnimations: disableAnimations,
                     delay: 150,
                   ),
@@ -1030,6 +1039,7 @@ class _BentoCard extends StatefulWidget {
   final Widget? extraWidget;
   final bool disableAnimations;
   final int delay;
+  final bool isFullHeight;
 
   const _BentoCard({
     required this.icon,
@@ -1041,6 +1051,7 @@ class _BentoCard extends StatefulWidget {
     this.extraWidget,
     this.disableAnimations = false,
     this.delay = 0,
+    this.isFullHeight = false,
   });
 
   @override
@@ -1056,21 +1067,22 @@ class _BentoCardState extends State<_BentoCard> {
       onEnter: (_) => setState(() => _hovering = true),
       onExit: (_) => setState(() => _hovering = false),
       child: AnimatedContainer(
+        height: widget.isFullHeight ? double.infinity : null,
         duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.all(28),
+        padding: const EdgeInsets.all(26),
         decoration: BoxDecoration(
           color: _hovering ? AppColors.cardHover : AppColors.card,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: _hovering
-                ? widget.accent.withValues(alpha: 0.25)
+                ? widget.accent.withValues(alpha: 0.35)
                 : AppColors.cardBorder,
             width: _hovering ? 1.5 : 1,
           ),
           boxShadow: _hovering
               ? [
                   BoxShadow(
-                    color: widget.accent.withValues(alpha: 0.08),
+                    color: widget.accent.withValues(alpha: 0.10),
                     blurRadius: 32,
                     offset: const Offset(0, 8),
                   ),
@@ -1079,39 +1091,49 @@ class _BentoCardState extends State<_BentoCard> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: widget.isFullHeight
+              ? MainAxisAlignment.spaceBetween
+              : MainAxisAlignment.start,
           children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: widget.accent
-                    .withValues(alpha: _hovering ? 0.20 : 0.14),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(widget.icon, color: widget.accent, size: 24),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              widget.title,
-              style: GoogleFonts.fraunces(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: AppColors.text,
-                height: 1.3,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              widget.body,
-              style: const TextStyle(
-                color: AppColors.textMuted,
-                fontSize: 14,
-                height: 1.65,
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: widget.accent
+                        .withValues(alpha: _hovering ? 0.22 : 0.14),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(widget.icon, color: widget.accent, size: 24),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  widget.title,
+                  style: GoogleFonts.fraunces(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.text,
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  widget.body,
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 14,
+                    height: 1.6,
+                  ),
+                ),
+              ],
             ),
             if (widget.quote != null) ...[
-              const SizedBox(height: 20),
+              const SizedBox(height: 18),
               Container(
+                width: double.infinity,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
@@ -1127,23 +1149,37 @@ class _BentoCardState extends State<_BentoCard> {
                     color: widget.accent,
                     fontStyle: FontStyle.italic,
                     fontWeight: FontWeight.w600,
-                    fontSize: 14,
+                    fontSize: 13.5,
                   ),
                 ),
               ),
             ],
             if (widget.extraWidget != null) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: 18),
               widget.extraWidget!,
             ],
             if (widget.screenshot != null) ...[
-              const SizedBox(height: 24),
-              Center(
-                child: PhoneMockup(
-                  imagePath: widget.screenshot!,
-                  width: 220,
+              const SizedBox(height: 18),
+              if (widget.isFullHeight)
+                Expanded(
+                  child: Center(
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      alignment: Alignment.bottomCenter,
+                      child: PhoneMockup(
+                        imagePath: widget.screenshot!,
+                        width: 215,
+                      ),
+                    ),
+                  ),
+                )
+              else
+                Center(
+                  child: PhoneMockup(
+                    imagePath: widget.screenshot!,
+                    width: 220,
+                  ),
                 ),
-              ),
             ],
           ],
         ),
@@ -1165,6 +1201,41 @@ class _BentoCardState extends State<_BentoCard> {
           duration: 500.ms,
           delay: Duration(milliseconds: widget.delay),
         );
+  }
+}
+
+class _SecurityBadgeVisual extends StatelessWidget {
+  const _SecurityBadgeVisual();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.cyan.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: const Border(
+          left: BorderSide(color: AppColors.cyan, width: 3),
+        ),
+      ),
+      child: Row(
+        children: const [
+          Icon(Icons.shield_outlined, color: AppColors.cyan, size: 16),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Chiffrement & respect strict de vos données',
+              style: TextStyle(
+                color: AppColors.cyan,
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -1212,8 +1283,11 @@ class _SyncNodeVisualState extends State<_SyncNodeVisual>
         children: [
           Row(
             children: const [
-              Icon(Icons.phone_android_rounded,
-                  color: AppColors.cyan, size: 18),
+              Icon(
+                Icons.phone_android_rounded,
+                color: AppColors.cyan,
+                size: 18,
+              ),
               SizedBox(width: 8),
               Text(
                 'Téléphone',
@@ -1232,7 +1306,9 @@ class _SyncNodeVisualState extends State<_SyncNodeVisual>
                 Container(
                   width: 28,
                   height: 1.5,
-                  color: AppColors.cyan.withValues(alpha: _pulseAnimation.value * 0.6),
+                  color: AppColors.cyan.withValues(
+                    alpha: _pulseAnimation.value * 0.6,
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -1243,13 +1319,15 @@ class _SyncNodeVisualState extends State<_SyncNodeVisual>
                         width: 6,
                         height: 6,
                         decoration: BoxDecoration(
-                          color: AppColors.cyan
-                              .withValues(alpha: _pulseAnimation.value),
+                          color: AppColors.cyan.withValues(
+                            alpha: _pulseAnimation.value,
+                          ),
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.cyan
-                                  .withValues(alpha: _pulseAnimation.value * 0.5),
+                              color: AppColors.cyan.withValues(
+                                alpha: _pulseAnimation.value * 0.5,
+                              ),
                               blurRadius: 6,
                             ),
                           ],
@@ -1259,8 +1337,9 @@ class _SyncNodeVisualState extends State<_SyncNodeVisual>
                       Text(
                         'sync',
                         style: TextStyle(
-                          color: AppColors.cyan
-                              .withValues(alpha: _pulseAnimation.value),
+                          color: AppColors.cyan.withValues(
+                            alpha: _pulseAnimation.value,
+                          ),
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.5,
@@ -1272,7 +1351,9 @@ class _SyncNodeVisualState extends State<_SyncNodeVisual>
                 Container(
                   width: 28,
                   height: 1.5,
-                  color: AppColors.cyan.withValues(alpha: _pulseAnimation.value * 0.6),
+                  color: AppColors.cyan.withValues(
+                    alpha: _pulseAnimation.value * 0.6,
+                  ),
                 ),
               ],
             ),
@@ -1303,9 +1384,7 @@ class _SyncNodeVisualState extends State<_SyncNodeVisual>
 class _DownloadCtaSection extends StatelessWidget {
   final bool disableAnimations;
 
-  const _DownloadCtaSection({
-    required this.disableAnimations,
-  });
+  const _DownloadCtaSection({required this.disableAnimations});
 
   @override
   Widget build(BuildContext context) {
@@ -1478,10 +1557,7 @@ class _DownloadCtaSection extends StatelessWidget {
 class _FaqSection extends StatefulWidget {
   final bool disableAnimations;
 
-  const _FaqSection({
-    super.key,
-    required this.disableAnimations,
-  });
+  const _FaqSection({super.key, required this.disableAnimations});
 
   @override
   State<_FaqSection> createState() => _FaqSectionState();
@@ -1598,7 +1674,7 @@ class _FaqSectionState extends State<_FaqSection> {
                                   color: AppColors.cyan.withValues(alpha: 0.05),
                                   blurRadius: 24,
                                   offset: const Offset(0, 4),
-                                )
+                                ),
                               ]
                             : [],
                       ),
@@ -1611,8 +1687,9 @@ class _FaqSectionState extends State<_FaqSection> {
                           shape: const Border(),
                           collapsedShape: const Border(),
                           iconColor: AppColors.cyan,
-                          collapsedIconColor:
-                              AppColors.textMuted.withValues(alpha: 0.6),
+                          collapsedIconColor: AppColors.textMuted.withValues(
+                            alpha: 0.6,
+                          ),
                           tilePadding: const EdgeInsets.symmetric(
                             horizontal: 24,
                             vertical: 10,
@@ -1627,8 +1704,7 @@ class _FaqSectionState extends State<_FaqSection> {
                           ),
                           children: [
                             Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(24, 0, 24, 22),
+                              padding: const EdgeInsets.fromLTRB(24, 0, 24, 22),
                               child: Text(
                                 item.answer,
                                 style: const TextStyle(
@@ -1782,15 +1858,15 @@ class _HoverCardState extends State<_HoverCard> {
             color: widget.isSelected
                 ? AppColors.cardHover
                 : _hovering
-                    ? AppColors.card.withValues(alpha: 0.9)
-                    : AppColors.card,
+                ? AppColors.card.withValues(alpha: 0.9)
+                : AppColors.card,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: widget.isSelected
                   ? widget.accentColor.withValues(alpha: 0.6)
                   : _hovering
-                      ? widget.accentColor.withValues(alpha: 0.2)
-                      : AppColors.cardBorder,
+                  ? widget.accentColor.withValues(alpha: 0.2)
+                  : AppColors.cardBorder,
               width: widget.isSelected ? 1.5 : 1,
             ),
             boxShadow: widget.isSelected
