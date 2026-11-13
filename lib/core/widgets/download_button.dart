@@ -6,8 +6,8 @@ import '../models/app_release.dart';
 import '../supabase/providers.dart';
 import '../theme/app_colors.dart';
 
-/// Bouton de téléchargement de l'APK Ngenou
-class DownloadButton extends ConsumerWidget {
+/// Bouton de téléchargement de l'APK Ngenou avec micro-interactions au survol
+class DownloadButton extends ConsumerStatefulWidget {
   final bool isCompact;
   final VoidCallback? onDownloaded;
 
@@ -16,6 +16,13 @@ class DownloadButton extends ConsumerWidget {
     this.isCompact = false,
     this.onDownloaded,
   });
+
+  @override
+  ConsumerState<DownloadButton> createState() => _DownloadButtonState();
+}
+
+class _DownloadButtonState extends ConsumerState<DownloadButton> {
+  bool _isHovered = false;
 
   Future<void> _launchDownload(
       BuildContext context, AppRelease? release) async {
@@ -49,26 +56,35 @@ class DownloadButton extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final latestReleaseAsync = ref.watch(latestReleaseProvider);
     final release = latestReleaseAsync.value;
 
-    if (isCompact) {
-      return ElevatedButton.icon(
-        onPressed: () => _launchDownload(context, release),
-        icon: const Icon(Icons.download_rounded, size: 18),
-        label: const Text(
-          'Télécharger',
-          style: TextStyle(fontWeight: FontWeight.w700),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFFAF7F2),
-          foregroundColor: const Color(0xFF0B1124),
-          elevation: 4,
-          shadowColor: AppColors.gold.withValues(alpha: 0.35),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(999),
+    if (widget.isCompact) {
+      return MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: AnimatedScale(
+          scale: _isHovered ? 1.04 : 1.0,
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          child: ElevatedButton.icon(
+            onPressed: () => _launchDownload(context, release),
+            icon: const Icon(Icons.download_rounded, size: 18),
+            label: const Text(
+              'Télécharger',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFAF7F2),
+              foregroundColor: const Color(0xFF0B1124),
+              elevation: _isHovered ? 6 : 3,
+              shadowColor: AppColors.gold.withValues(alpha: _isHovered ? 0.5 : 0.35),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
           ),
         ),
       );
@@ -93,89 +109,101 @@ class DownloadButton extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Material(
-          color: Colors.transparent,
-          child: InkWell(
+        MouseRegion(
+          onEnter: (_) => setState(() => _isHovered = true),
+          onExit: (_) => setState(() => _isHovered = false),
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
             onTap: () => _launchDownload(context, release),
-            borderRadius: BorderRadius.circular(999),
-            hoverColor: Colors.white.withValues(alpha: 0.1),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 15),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFFFCF9F5),
-                    Color(0xFFEDE4D7),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.95),
-                  width: 1.2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.45),
-                    blurRadius: 28,
-                    offset: const Offset(0, 10),
-                  ),
-                  BoxShadow(
-                    color: AppColors.gold.withValues(alpha: 0.35),
-                    blurRadius: 24,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(9),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0B1124).withValues(alpha: 0.08),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.download_rounded,
-                      color: Color(0xFF0B1124),
-                      size: 26,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Text(
-                        'Application mobile',
-                        style: TextStyle(
-                          fontSize: 11.5,
-                          color: Color(0xFF55607C),
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                      SizedBox(height: 1),
-                      Text(
-                        'Télécharger Ngenou',
-                        style: TextStyle(
-                          fontSize: 17.5,
-                          color: Color(0xFF0B1124),
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.3,
-                        ),
-                      ),
+            child: AnimatedScale(
+              scale: _isHovered ? 1.025 : 1.0,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 26, vertical: 15),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFFFCF9F5),
+                      Color(0xFFEDE4D7),
                     ],
                   ),
-                  const SizedBox(width: 14),
-                  const Icon(
-                    Icons.arrow_downward_rounded,
-                    color: Color(0xFF0B1124),
-                    size: 20,
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: _isHovered ? 1.0 : 0.95),
+                    width: 1.2,
                   ),
-                ],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.45),
+                      blurRadius: _isHovered ? 34 : 28,
+                      offset: Offset(0, _isHovered ? 12 : 10),
+                    ),
+                    BoxShadow(
+                      color: AppColors.gold.withValues(alpha: _isHovered ? 0.50 : 0.35),
+                      blurRadius: _isHovered ? 30 : 24,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(9),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0B1124).withValues(alpha: 0.08),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.download_rounded,
+                        color: Color(0xFF0B1124),
+                        size: 26,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text(
+                          'Application mobile',
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            color: Color(0xFF55607C),
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                        SizedBox(height: 1),
+                        Text(
+                          'Télécharger Ngenou',
+                          style: TextStyle(
+                            fontSize: 17.5,
+                            color: Color(0xFF0B1124),
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 14),
+                    AnimatedSlide(
+                      offset: _isHovered ? const Offset(0, 0.15) : Offset.zero,
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOutCubic,
+                      child: const Icon(
+                        Icons.arrow_downward_rounded,
+                        color: Color(0xFF0B1124),
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
