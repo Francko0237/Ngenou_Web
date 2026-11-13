@@ -11,7 +11,7 @@ import '../../../core/widgets/responsive_layout.dart';
 import '../../../core/widgets/site_footer.dart';
 import '../../../core/widgets/site_navbar.dart';
 
-/// Page d'accueil vitrine de Ngenou
+/// Page d'accueil vitrine de Ngenou — Refonte UI/UX premium
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
     if (key?.currentContext != null) {
       Scrollable.ensureVisible(
         key!.currentContext!,
-        duration: const Duration(milliseconds: 600),
+        duration: const Duration(milliseconds: 700),
         curve: Curves.easeInOutCubic,
       );
     }
@@ -92,9 +92,9 @@ class _HomePageState extends State<HomePage> {
 }
 
 // =============================================================================
-// HERO SECTION
+// HERO SECTION — Immersive & Cinématique
 // =============================================================================
-class _HeroSection extends StatelessWidget {
+class _HeroSection extends StatefulWidget {
   final VoidCallback onExplorePressed;
   final bool disableAnimations;
 
@@ -104,132 +104,259 @@ class _HeroSection extends StatelessWidget {
   });
 
   @override
+  State<_HeroSection> createState() => _HeroSectionState();
+}
+
+class _HeroSectionState extends State<_HeroSection>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ambientController;
+  late Animation<double> _ambientAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _ambientController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 5000),
+    );
+    _ambientAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _ambientController, curve: Curves.easeInOut),
+    );
+    if (!widget.disableAnimations) {
+      _ambientController.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _ambientController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isMobile = Responsive.isMobile(context);
     final isDesktop = Responsive.isDesktop(context);
 
-    Widget content = ResponsiveContainer(
-      padding: EdgeInsets.symmetric(
-        horizontal: Responsive.horizontalPadding(context),
-        vertical: isMobile ? 36 : 64,
-      ),
-      child: isDesktop
-          ? Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(flex: 6, child: _buildCopy(context)),
-                const SizedBox(width: 48),
-                Expanded(flex: 5, child: _buildVisual(context)),
-              ],
-            )
-          : Column(
-              children: [
-                _buildCopy(context),
-                const SizedBox(height: 48),
-                _buildVisual(context),
-              ],
+    return AnimatedBuilder(
+      animation: _ambientAnimation,
+      builder: (context, child) {
+        return Stack(
+          children: [
+            // ── Fond avec halos lumineux ambiants animés ──────────────────
+            Positioned.fill(
+              child: IgnorePointer(
+                child: CustomPaint(
+                  painter: _AmbientGlowPainter(
+                    progress: widget.disableAnimations ? 0.5 : _ambientAnimation.value,
+                  ),
+                ),
+              ),
             ),
+
+            // ── Contenu principal ─────────────────────────────────────────
+            child!,
+          ],
+        );
+      },
+      child: Container(
+        constraints: BoxConstraints(
+          minHeight: isMobile ? 0 : 680,
+        ),
+        child: ResponsiveContainer(
+          padding: EdgeInsets.symmetric(
+            horizontal: Responsive.horizontalPadding(context),
+            vertical: isMobile ? 40 : 72,
+          ),
+          child: isDesktop
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(flex: 6, child: _buildCopy(context)),
+                    const SizedBox(width: 56),
+                    Expanded(flex: 5, child: _buildVisual(context)),
+                  ],
+                )
+              : Column(
+                  children: [
+                    _buildCopy(context),
+                    const SizedBox(height: 56),
+                    _buildVisual(context),
+                  ],
+                ),
+        ),
+      ),
     );
-
-    if (disableAnimations) return content;
-
-    return content
-        .animate()
-        .fadeIn(duration: 600.ms, curve: Curves.easeOut)
-        .slideY(begin: 0.05, end: 0, duration: 600.ms);
   }
 
   Widget _buildCopy(BuildContext context) {
     final isMobile = Responsive.isMobile(context);
 
+    final badgeWidget = widget.disableAnimations
+        ? _buildBadge()
+        : _buildBadge()
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 100.ms)
+            .slideY(begin: -0.2, end: 0, duration: 400.ms);
+
+    final titleWidget = widget.disableAnimations
+        ? _buildTitle(isMobile)
+        : _buildTitle(isMobile)
+            .animate()
+            .fadeIn(duration: 600.ms, delay: 250.ms, curve: Curves.easeOut)
+            .slideY(begin: 0.08, end: 0, duration: 600.ms, delay: 250.ms);
+
+    final descWidget = widget.disableAnimations
+        ? _buildDesc(isMobile)
+        : _buildDesc(isMobile)
+            .animate()
+            .fadeIn(duration: 500.ms, delay: 450.ms)
+            .slideY(begin: 0.06, end: 0, duration: 500.ms, delay: 450.ms);
+
+    final ctaWidget = widget.disableAnimations
+        ? _buildCta(isMobile)
+        : _buildCta(isMobile)
+            .animate()
+            .fadeIn(duration: 500.ms, delay: 600.ms)
+            .slideY(begin: 0.06, end: 0, duration: 500.ms, delay: 600.ms);
+
+    final specsWidget = widget.disableAnimations
+        ? _buildSpecs(isMobile)
+        : _buildSpecs(isMobile)
+            .animate()
+            .fadeIn(duration: 500.ms, delay: 750.ms);
+
     return Column(
       crossAxisAlignment:
           isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
-        RichText(
-          textAlign: isMobile ? TextAlign.center : TextAlign.start,
-          text: TextSpan(
-            style: GoogleFonts.fraunces(
-              fontSize: isMobile ? 34 : 52,
-              fontWeight: FontWeight.w800,
-              color: AppColors.text,
-              height: 1.15,
-              letterSpacing: -1,
-            ),
-            children: const [
-              TextSpan(text: 'L\'apprentissage intelligent dont '),
-              WidgetSpan(
-                alignment: PlaceholderAlignment.baseline,
-                baseline: TextBaseline.alphabetic,
-                child: GradientText(
-                  'vous êtes le maître',
-                  style: TextStyle(
-                    fontSize: 52,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -1,
-                  ),
-                ),
-              ),
-              TextSpan(text: '.'),
-            ],
-          ),
-        ),
+        badgeWidget,
         const SizedBox(height: 20),
-        Text(
-          'Ngenou est un tuteur IA qui vous pose les bonnes questions au lieu de tout résoudre à votre place. Vos cours, votre planning et vos tâches restent accessibles sans connexion.',
-          textAlign: isMobile ? TextAlign.center : TextAlign.start,
-          style: GoogleFonts.manrope(
-            fontSize: isMobile ? 15 : 17,
-            color: AppColors.textMuted,
-            height: 1.6,
-          ),
+        titleWidget,
+        const SizedBox(height: 22),
+        descWidget,
+        const SizedBox(height: 36),
+        ctaWidget,
+        const SizedBox(height: 40),
+        specsWidget,
+      ],
+    );
+  }
+
+  Widget _buildBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+      decoration: BoxDecoration(
+        color: AppColors.cyan.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: AppColors.cyan.withValues(alpha: 0.28),
+          width: 1,
         ),
-        const SizedBox(height: 32),
-        Wrap(
-          spacing: 16,
-          runSpacing: 16,
-          alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            const DownloadButton(),
-            OutlinedButton.icon(
-              onPressed: onExplorePressed,
-              icon: const Text('Voir l\'application'),
-              label: const Icon(Icons.arrow_forward_rounded, size: 16),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.text,
-                side: const BorderSide(color: AppColors.cardBorder, width: 1.5),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(999),
-                ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 7,
+            height: 7,
+            decoration: const BoxDecoration(
+              color: AppColors.cyan,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Tuteur IA disponible maintenant',
+            style: GoogleFonts.manrope(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+              color: AppColors.cyan,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTitle(bool isMobile) {
+    return RichText(
+      textAlign: isMobile ? TextAlign.center : TextAlign.start,
+      text: TextSpan(
+        style: GoogleFonts.fraunces(
+          fontSize: isMobile ? 36 : 56,
+          fontWeight: FontWeight.w800,
+          color: AppColors.text,
+          height: 1.12,
+          letterSpacing: -1.2,
+        ),
+        children: [
+          const TextSpan(text: 'L\'apprentissage\nintelligent dont '),
+          WidgetSpan(
+            alignment: PlaceholderAlignment.baseline,
+            baseline: TextBaseline.alphabetic,
+            child: GradientText(
+              'vous êtes le maître',
+              style: TextStyle(
+                fontSize: isMobile ? 36 : 56,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -1.2,
+                height: 1.12,
               ),
             ),
-          ],
+          ),
+          const TextSpan(text: '.'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDesc(bool isMobile) {
+    return Text(
+      'Ngenou est un tuteur IA qui vous pose les bonnes questions au lieu de tout résoudre à votre place. Vos cours, votre planning et vos tâches restent accessibles sans connexion.',
+      textAlign: isMobile ? TextAlign.center : TextAlign.start,
+      style: GoogleFonts.manrope(
+        fontSize: isMobile ? 15 : 17,
+        color: AppColors.textMuted,
+        height: 1.65,
+      ),
+    );
+  }
+
+  Widget _buildCta(bool isMobile) {
+    return Wrap(
+      spacing: 16,
+      runSpacing: 16,
+      alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        const DownloadButton(),
+        _ExploreButton(onPressed: widget.onExplorePressed),
+      ],
+    );
+  }
+
+  Widget _buildSpecs(bool isMobile) {
+    return Wrap(
+      spacing: 24,
+      runSpacing: 14,
+      alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
+      children: const [
+        _HeroSpec(
+          icon: Icons.wifi_off_rounded,
+          text: 'Cours et planning hors-ligne',
+          color: AppColors.cyan,
         ),
-        const SizedBox(height: 36),
-        Wrap(
-          spacing: 20,
-          runSpacing: 12,
-          alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
-          children: const [
-            _HeroSpec(
-              icon: Icons.wifi_off_rounded,
-              text: 'Cours et planning hors-ligne',
-              color: AppColors.cyan,
-            ),
-            _HeroSpec(
-              icon: Icons.school_outlined,
-              text: 'Du primaire au supérieur',
-              color: AppColors.gold,
-            ),
-            _HeroSpec(
-              icon: Icons.shield_outlined,
-              text: 'Données sauvegardées en sécurité',
-              color: AppColors.success,
-            ),
-          ],
+        _HeroSpec(
+          icon: Icons.school_outlined,
+          text: 'Du primaire au supérieur',
+          color: AppColors.gold,
+        ),
+        _HeroSpec(
+          icon: Icons.shield_outlined,
+          text: 'Données sauvegardées en sécurité',
+          color: AppColors.success,
         ),
       ],
     );
@@ -237,14 +364,134 @@ class _HeroSection extends StatelessWidget {
 
   Widget _buildVisual(BuildContext context) {
     final isMobile = Responsive.isMobile(context);
-    final compositionWidth = isMobile ? 320.0 : 440.0;
+    final compositionWidth = isMobile ? 310.0 : 460.0;
 
-    return Center(
+    final visual = Center(
       child: DualPhoneMockup(
         frontImagePath: 'assets/screenshots/Dashboard.png',
         backImagePath: 'assets/screenshots/Cours.png',
         width: compositionWidth,
         glowColor: AppColors.gold,
+        disableAnimations: widget.disableAnimations,
+      ),
+    );
+
+    if (widget.disableAnimations) return visual;
+
+    return visual
+        .animate()
+        .fadeIn(duration: 800.ms, delay: 350.ms, curve: Curves.easeOut)
+        .slideY(begin: 0.04, end: 0, duration: 800.ms, delay: 350.ms);
+  }
+}
+
+/// Peintre des halos ambiants du Hero
+class _AmbientGlowPainter extends CustomPainter {
+  final double progress;
+  _AmbientGlowPainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Halo or — coin supérieur droit
+    final paintGold = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          AppColors.gold.withValues(alpha: 0.14 + progress * 0.07),
+          AppColors.gold.withValues(alpha: 0.04),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.4, 1.0],
+      ).createShader(Rect.fromCircle(
+        center: Offset(size.width * 0.85, -size.height * 0.1),
+        radius: size.width * 0.5,
+      ));
+    canvas.drawCircle(
+      Offset(size.width * 0.85, -size.height * 0.1),
+      size.width * 0.5,
+      paintGold,
+    );
+
+    // Halo cyan — coin inférieur gauche
+    final paintCyan = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          AppColors.cyan.withValues(alpha: 0.10 + (1 - progress) * 0.06),
+          AppColors.cyan.withValues(alpha: 0.03),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.4, 1.0],
+      ).createShader(Rect.fromCircle(
+        center: Offset(-size.width * 0.1, size.height * 1.1),
+        radius: size.width * 0.55,
+      ));
+    canvas.drawCircle(
+      Offset(-size.width * 0.1, size.height * 1.1),
+      size.width * 0.55,
+      paintCyan,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_AmbientGlowPainter old) => old.progress != progress;
+}
+
+/// Bouton "Voir l'application" avec hover animé
+class _ExploreButton extends StatefulWidget {
+  final VoidCallback onPressed;
+  const _ExploreButton({required this.onPressed});
+
+  @override
+  State<_ExploreButton> createState() => _ExploreButtonState();
+}
+
+class _ExploreButtonState extends State<_ExploreButton> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: GestureDetector(
+        onTap: widget.onPressed,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 15),
+          decoration: BoxDecoration(
+            color: _hovering
+                ? AppColors.cardHover
+                : AppColors.card.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: _hovering
+                  ? AppColors.cardBorder.withValues(alpha: 1.0)
+                  : AppColors.cardBorder,
+              width: 1.5,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Voir l\'application',
+                style: GoogleFonts.manrope(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.text,
+                ),
+              ),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                margin: EdgeInsets.only(left: _hovering ? 10 : 8),
+                child: Icon(
+                  Icons.arrow_forward_rounded,
+                  color: AppColors.text,
+                  size: 16,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -262,8 +509,15 @@ class _HeroSpec extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: color ?? AppColors.cyan, size: 16),
-        const SizedBox(width: 8),
+        Container(
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: (color ?? AppColors.cyan).withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Icon(icon, color: color ?? AppColors.cyan, size: 14),
+        ),
+        const SizedBox(width: 9),
         Text(
           text,
           style: const TextStyle(
@@ -278,7 +532,7 @@ class _HeroSpec extends StatelessWidget {
 }
 
 // =============================================================================
-// SHOWCASE SECTION (Onglets avec Phone Preview)
+// SHOWCASE SECTION — Onglets interactifs avec aperçu dynamique
 // =============================================================================
 class _ShowcaseSection extends StatelessWidget {
   final int selectedIndex;
@@ -362,39 +616,30 @@ class _ShowcaseSection extends StatelessWidget {
     final isDesktop = Responsive.isDesktop(context);
     final activeTab = tabs[selectedIndex];
 
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 72),
-      decoration: const BoxDecoration(
-        color: Color(0xFF070E20),
+    Widget content = Container(
+      padding: const EdgeInsets.symmetric(vertical: 80),
+      decoration: BoxDecoration(
+        color: const Color(0xFF060D1E),
         border: Border.symmetric(
-          horizontal: BorderSide(color: AppColors.cardBorder, width: 1),
+          horizontal: BorderSide(
+            color: AppColors.cardBorder.withValues(alpha: 0.7),
+            width: 1,
+          ),
         ),
       ),
       child: ResponsiveContainer(
         child: Column(
           children: [
-            // Titre de section
-            Text(
-              'Quatre outils, une seule application.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.fraunces(
-                fontSize: 32,
-                fontWeight: FontWeight.w700,
-                color: AppColors.text,
-              ),
+            // — En-tête de section —
+            _SectionHeader(
+              title: 'Quatre outils, une seule application.',
+              subtitle:
+                  'Choisissez un module pour voir comment il se présente sur votre téléphone.',
+              disableAnimations: disableAnimations,
             ),
-            const SizedBox(height: 12),
-            const Text(
-              'Choisissez un module pour voir comment il se présente sur votre téléphone.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColors.textMuted,
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 48),
+            const SizedBox(height: 56),
 
-            // Contenu
+            // — Contenu —
             if (isDesktop)
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -407,12 +652,26 @@ class _ShowcaseSection extends StatelessWidget {
                       }),
                     ),
                   ),
-                  const SizedBox(width: 48),
+                  const SizedBox(width: 56),
                   Expanded(
                     flex: 5,
                     child: Center(
                       child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
+                        duration: const Duration(milliseconds: 400),
+                        switchInCurve: Curves.easeOutCubic,
+                        switchOutCurve: Curves.easeIn,
+                        transitionBuilder: (child, animation) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(0, 0.05),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            ),
+                          );
+                        },
                         child: Column(
                           key: ValueKey(activeTab.frontScreenshot),
                           mainAxisSize: MainAxisSize.min,
@@ -420,10 +679,11 @@ class _ShowcaseSection extends StatelessWidget {
                             DualPhoneMockup(
                               frontImagePath: activeTab.frontScreenshot,
                               backImagePath: activeTab.backScreenshot,
-                              width: 380,
+                              width: 390,
                               glowColor: activeTab.accent,
+                              disableAnimations: disableAnimations,
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 20),
                             Text(
                               activeTab.caption,
                               style: const TextStyle(
@@ -441,143 +701,142 @@ class _ShowcaseSection extends StatelessWidget {
               )
             else
               Column(
-                children: [
-                  // Onglets en accordéon / liste
-                  ...List.generate(tabs.length, (i) {
-                    final tab = tabs[i];
-                    final isSelected = selectedIndex == i;
-                    return Column(
-                      children: [
-                        _buildTabItem(context, tab, i),
-                        if (isSelected) ...[
-                          const SizedBox(height: 24),
-                          Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                DualPhoneMockup(
-                                  frontImagePath: tab.frontScreenshot,
-                                  backImagePath: tab.backScreenshot,
-                                  width: 290,
-                                  glowColor: tab.accent,
+                children: List.generate(tabs.length, (i) {
+                  final tab = tabs[i];
+                  final isSelected = selectedIndex == i;
+                  return Column(
+                    children: [
+                      _buildTabItem(context, tab, i),
+                      if (isSelected) ...[
+                        const SizedBox(height: 28),
+                        Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              DualPhoneMockup(
+                                frontImagePath: tab.frontScreenshot,
+                                backImagePath: tab.backScreenshot,
+                                width: 300,
+                                glowColor: tab.accent,
+                                disableAnimations: disableAnimations,
+                              ),
+                              const SizedBox(height: 14),
+                              Text(
+                                tab.caption,
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 12,
                                 ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  tab.caption,
-                                  style: const TextStyle(
-                                    color: AppColors.textMuted,
-                                    fontSize: 12,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 32),
-                        ],
+                        ),
+                        const SizedBox(height: 32),
                       ],
-                    );
-                  }),
-                ],
+                    ],
+                  );
+                }),
               ),
           ],
         ),
       ),
     );
+
+    if (disableAnimations) return content;
+
+    return content
+        .animate(
+          onPlay: (c) => c.forward(),
+        )
+        .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+        .slideY(begin: 0.04, end: 0, duration: 600.ms);
   }
 
   Widget _buildTabItem(BuildContext context, _ShowcaseTab tab, int index) {
     final isSelected = selectedIndex == index;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: InkWell(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: _HoverCard(
         onTap: () => onTabChanged(index),
-        borderRadius: BorderRadius.circular(16),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.cardHover : AppColors.card,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isSelected ? tab.accent : AppColors.cardBorder,
-              width: isSelected ? 1.5 : 1,
-            ),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: tab.accent.withValues(alpha: 0.12),
-                      blurRadius: 20,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : [],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: tab.accent.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(tab.icon, color: tab.accent, size: 20),
+        isSelected: isSelected,
+        accentColor: tab.accent,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: tab.accent
+                        .withValues(alpha: isSelected ? 0.20 : 0.12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Text(
-                      tab.title,
-                      style: GoogleFonts.manrope(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                        color:
-                            isSelected ? AppColors.text : AppColors.textMuted,
-                      ),
+                  child: Icon(tab.icon, color: tab.accent, size: 20),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    tab.title,
+                    style: GoogleFonts.manrope(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: isSelected ? AppColors.text : AppColors.textMuted,
                     ),
-                  ),
-                ],
-              ),
-              if (isSelected) ...[
-                const SizedBox(height: 16),
-                Text(
-                  tab.description,
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: 14,
-                    height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 16),
-                ...tab.features.map(
-                  (f) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(Icons.check_circle_rounded,
-                            color: tab.accent, size: 16),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            f,
-                            style: const TextStyle(
-                              color: AppColors.text,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                AnimatedRotation(
+                  turns: isSelected ? 0.25 : 0,
+                  duration: const Duration(milliseconds: 250),
+                  child: Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: isSelected
+                        ? tab.accent
+                        : AppColors.textMuted.withValues(alpha: 0.4),
+                    size: 14,
                   ),
                 ),
               ],
+            ),
+            if (isSelected) ...[
+              const SizedBox(height: 16),
+              Text(
+                tab.description,
+                style: const TextStyle(
+                  color: AppColors.textMuted,
+                  fontSize: 14,
+                  height: 1.6,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ...tab.features.map(
+                (f) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.check_circle_rounded,
+                          color: tab.accent, size: 16),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          f,
+                          style: const TextStyle(
+                            color: AppColors.text,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
@@ -621,37 +880,26 @@ class _BentoFeaturesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDesktop = Responsive.isDesktop(context);
 
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 80),
+    Widget content = Container(
+      padding: const EdgeInsets.symmetric(vertical: 88),
       child: ResponsiveContainer(
         child: Column(
           children: [
-            Text(
-              'Pensé pour réviser partout, même quand le réseau lâche.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.fraunces(
-                fontSize: 32,
-                fontWeight: FontWeight.w700,
-                color: AppColors.text,
-              ),
+            _SectionHeader(
+              title: 'Pensé pour réviser partout,\nmême quand le réseau lâche.',
+              subtitle:
+                  'Vos cours et votre planning vous suivent partout. Le tuteur vous rejoint dès que vous êtes en ligne.',
+              disableAnimations: disableAnimations,
             ),
-            const SizedBox(height: 12),
-            const Text(
-              'Vos cours et votre planning vous suivent partout. Le tuteur vous rejoint dès que vous êtes en ligne.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColors.textMuted,
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 54),
+            const SizedBox(height: 56),
 
             // Bento Layout
             if (isDesktop)
               Column(
                 children: [
                   Row(
-                    children: const [
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Expanded(
                         flex: 6,
                         child: _BentoCard(
@@ -660,10 +908,12 @@ class _BentoFeaturesSection extends StatelessWidget {
                           title: 'Vos cours restent avec vous',
                           body:
                               'Cours, synthèses, planning et tâches sont enregistrés sur votre téléphone. Révisez dans le bus ou en coupure de réseau : seul le tuteur IA a besoin d\'une connexion.',
-                          extraWidget: _SyncNodeVisual(),
+                          extraWidget: const _SyncNodeVisual(),
+                          disableAnimations: disableAnimations,
+                          delay: 100,
                         ),
                       ),
-                      SizedBox(width: 24),
+                      const SizedBox(width: 20),
                       Expanded(
                         flex: 4,
                         child: _BentoCard(
@@ -672,13 +922,16 @@ class _BentoFeaturesSection extends StatelessWidget {
                           title: 'Vos données restent les vôtres',
                           body:
                               'Dès que vous êtes en ligne, vos données sont sauvegardées de façon chiffrée et rattachées à votre seul compte. Vous pouvez les supprimer à tout moment.',
+                          disableAnimations: disableAnimations,
+                          delay: 200,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
                   Row(
-                    children: const [
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Expanded(
                         flex: 4,
                         child: _BentoCard(
@@ -688,9 +941,11 @@ class _BentoFeaturesSection extends StatelessWidget {
                           body:
                               'Le tuteur ne fait pas vos devoirs : il pose les questions qui font venir le déclic.',
                           quote: '« C\'est en se trompant qu\'on apprend ! »',
+                          disableAnimations: disableAnimations,
+                          delay: 300,
                         ),
                       ),
-                      SizedBox(width: 24),
+                      const SizedBox(width: 20),
                       Expanded(
                         flex: 6,
                         child: _BentoCard(
@@ -701,6 +956,8 @@ class _BentoFeaturesSection extends StatelessWidget {
                           body:
                               'Mode sombre, badges de progression et bulles d\'aide que vous pouvez relancer à tout moment pour découvrir l\'application sans stress.',
                           screenshot: 'assets/screenshots/Dashboard.png',
+                          disableAnimations: disableAnimations,
+                          delay: 400,
                         ),
                       ),
                     ],
@@ -709,24 +966,28 @@ class _BentoFeaturesSection extends StatelessWidget {
               )
             else
               Column(
-                children: const [
+                children: [
                   _BentoCard(
                     icon: Icons.bolt_rounded,
                     accent: AppColors.cyan,
                     title: 'Vos cours restent avec vous',
                     body:
                         'Cours, synthèses, planning et tâches sont enregistrés sur votre téléphone. Révisez dans le bus ou en coupure de réseau : seul le tuteur IA a besoin d\'une connexion.',
-                    extraWidget: _SyncNodeVisual(),
+                    extraWidget: const _SyncNodeVisual(),
+                    disableAnimations: disableAnimations,
+                    delay: 100,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   _BentoCard(
                     icon: Icons.shield_rounded,
                     accent: AppColors.cyan,
                     title: 'Vos données restent les vôtres',
                     body:
                         'Dès que vous êtes en ligne, vos données sont sauvegardées de façon chiffrée et rattachées à votre seul compte. Vous pouvez les supprimer à tout moment.',
+                    disableAnimations: disableAnimations,
+                    delay: 150,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   _BentoCard(
                     icon: Icons.lightbulb_rounded,
                     accent: AppColors.gold,
@@ -734,8 +995,10 @@ class _BentoFeaturesSection extends StatelessWidget {
                     body:
                         'Le tuteur ne fait pas vos devoirs : il pose les questions qui font venir le déclic.',
                     quote: '« C\'est en se trompant qu\'on apprend ! »',
+                    disableAnimations: disableAnimations,
+                    delay: 200,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   _BentoCard(
                     icon: Icons.phone_android_rounded,
                     accent: AppColors.gold,
@@ -743,6 +1006,8 @@ class _BentoFeaturesSection extends StatelessWidget {
                     body:
                         'Mode sombre, badges de progression et bulles d\'aide que vous pouvez relancer à tout moment pour découvrir l\'application sans stress.',
                     screenshot: 'assets/screenshots/Dashboard.png',
+                    disableAnimations: disableAnimations,
+                    delay: 250,
                   ),
                 ],
               ),
@@ -750,10 +1015,12 @@ class _BentoFeaturesSection extends StatelessWidget {
         ),
       ),
     );
+
+    return content;
   }
 }
 
-class _BentoCard extends StatelessWidget {
+class _BentoCard extends StatefulWidget {
   final IconData icon;
   final Color accent;
   final String title;
@@ -761,6 +1028,8 @@ class _BentoCard extends StatelessWidget {
   final String? quote;
   final String? screenshot;
   final Widget? extraWidget;
+  final bool disableAnimations;
+  final int delay;
 
   const _BentoCard({
     required this.icon,
@@ -770,88 +1039,164 @@ class _BentoCard extends StatelessWidget {
     this.quote,
     this.screenshot,
     this.extraWidget,
+    this.disableAnimations = false,
+    this.delay = 0,
   });
 
   @override
+  State<_BentoCard> createState() => _BentoCardState();
+}
+
+class _BentoCardState extends State<_BentoCard> {
+  bool _hovering = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.cardBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: accent, size: 24),
+    Widget card = MouseRegion(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        padding: const EdgeInsets.all(28),
+        decoration: BoxDecoration(
+          color: _hovering ? AppColors.cardHover : AppColors.card,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: _hovering
+                ? widget.accent.withValues(alpha: 0.25)
+                : AppColors.cardBorder,
+            width: _hovering ? 1.5 : 1,
           ),
-          const SizedBox(height: 20),
-          Text(
-            title,
-            style: GoogleFonts.fraunces(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: AppColors.text,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            body,
-            style: const TextStyle(
-              color: AppColors.textMuted,
-              fontSize: 14,
-              height: 1.6,
-            ),
-          ),
-          if (quote != null) ...[
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          boxShadow: _hovering
+              ? [
+                  BoxShadow(
+                    color: widget.accent.withValues(alpha: 0.08),
+                    blurRadius: 32,
+                    offset: const Offset(0, 8),
+                  ),
+                ]
+              : [],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: accent.withValues(alpha: 0.1),
+                color: widget.accent
+                    .withValues(alpha: _hovering ? 0.20 : 0.14),
                 borderRadius: BorderRadius.circular(12),
-                border: Border(
-                  left: BorderSide(color: accent, width: 3),
-                ),
               ),
-              child: Text(
-                quote!,
-                style: TextStyle(
-                  color: accent,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.w600,
-                ),
+              child: Icon(widget.icon, color: widget.accent, size: 24),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              widget.title,
+              style: GoogleFonts.fraunces(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.text,
+                height: 1.3,
               ),
             ),
-          ],
-          if (extraWidget != null) ...[
-            const SizedBox(height: 24),
-            extraWidget!,
-          ],
-          if (screenshot != null) ...[
-            const SizedBox(height: 24),
-            Center(
-              child: PhoneMockup(
-                imagePath: screenshot!,
-                width: 220,
+            const SizedBox(height: 12),
+            Text(
+              widget.body,
+              style: const TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 14,
+                height: 1.65,
               ),
             ),
+            if (widget.quote != null) ...[
+              const SizedBox(height: 20),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: widget.accent.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border(
+                    left: BorderSide(color: widget.accent, width: 3),
+                  ),
+                ),
+                child: Text(
+                  widget.quote!,
+                  style: TextStyle(
+                    color: widget.accent,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+            if (widget.extraWidget != null) ...[
+              const SizedBox(height: 24),
+              widget.extraWidget!,
+            ],
+            if (widget.screenshot != null) ...[
+              const SizedBox(height: 24),
+              Center(
+                child: PhoneMockup(
+                  imagePath: widget.screenshot!,
+                  width: 220,
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
+
+    if (widget.disableAnimations) return card;
+
+    return card
+        .animate()
+        .fadeIn(
+          duration: 500.ms,
+          delay: Duration(milliseconds: widget.delay),
+          curve: Curves.easeOut,
+        )
+        .slideY(
+          begin: 0.05,
+          end: 0,
+          duration: 500.ms,
+          delay: Duration(milliseconds: widget.delay),
+        );
   }
 }
 
-class _SyncNodeVisual extends StatelessWidget {
+class _SyncNodeVisual extends StatefulWidget {
   const _SyncNodeVisual();
+
+  @override
+  State<_SyncNodeVisual> createState() => _SyncNodeVisualState();
+}
+
+class _SyncNodeVisualState extends State<_SyncNodeVisual>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1600),
+    )..repeat(reverse: true);
+    _pulseAnimation = Tween<double>(begin: 0.4, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -880,26 +1225,57 @@ class _SyncNodeVisual extends StatelessWidget {
               ),
             ],
           ),
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 1.5,
-                color: AppColors.cyan.withValues(alpha: 0.5),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  'sync auto',
-                  style: TextStyle(color: AppColors.cyan, fontSize: 11),
+          AnimatedBuilder(
+            animation: _pulseAnimation,
+            builder: (context, _) => Row(
+              children: [
+                Container(
+                  width: 28,
+                  height: 1.5,
+                  color: AppColors.cyan.withValues(alpha: _pulseAnimation.value * 0.6),
                 ),
-              ),
-              Container(
-                width: 32,
-                height: 1.5,
-                color: AppColors.cyan.withValues(alpha: 0.5),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: AppColors.cyan
+                              .withValues(alpha: _pulseAnimation.value),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.cyan
+                                  .withValues(alpha: _pulseAnimation.value * 0.5),
+                              blurRadius: 6,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        'sync',
+                        style: TextStyle(
+                          color: AppColors.cyan
+                              .withValues(alpha: _pulseAnimation.value),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: 28,
+                  height: 1.5,
+                  color: AppColors.cyan.withValues(alpha: _pulseAnimation.value * 0.6),
+                ),
+              ],
+            ),
           ),
           Row(
             children: const [
@@ -922,7 +1298,7 @@ class _SyncNodeVisual extends StatelessWidget {
 }
 
 // =============================================================================
-// DOWNLOAD CTA SECTION
+// DOWNLOAD CTA SECTION — Bannière de conversion premium
 // =============================================================================
 class _DownloadCtaSection extends StatelessWidget {
   final bool disableAnimations;
@@ -935,58 +1311,136 @@ class _DownloadCtaSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDesktop = Responsive.isDesktop(context);
 
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 60),
+    Widget content = Container(
+      padding: const EdgeInsets.symmetric(vertical: 64),
       child: ResponsiveContainer(
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: isDesktop ? 56 : 28,
-            vertical: isDesktop ? 48 : 36,
-          ),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF0F1E3D), Color(0xFF0B1428)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: AppColors.cardBorder, width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.cyan.withValues(alpha: 0.08),
-                blurRadius: 40,
-                offset: const Offset(0, 10),
+        child: Stack(
+          children: [
+            // Fond avec dégradé et halos
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: isDesktop ? 56 : 28,
+                vertical: isDesktop ? 52 : 40,
               ),
-            ],
-          ),
-          child: isDesktop
-              ? Row(
-                  children: [
-                    Image.asset(
-                      'assets/images/logo_full.png',
-                      width: 220,
-                      height: 220,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(width: 48),
-                    Expanded(child: _buildCtaContent()),
-                  ],
-                )
-              : Column(
-                  children: [
-                    Image.asset(
-                      'assets/images/logo_full.png',
-                      width: 180,
-                      height: 180,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(height: 24),
-                    _buildCtaContent(),
-                  ],
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF0D1C3A), Color(0xFF0A1328)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(
+                  color: AppColors.cardBorder.withValues(alpha: 0.8),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.cyan.withValues(alpha: 0.06),
+                    blurRadius: 60,
+                    offset: const Offset(0, 20),
+                  ),
+                  BoxShadow(
+                    color: AppColors.gold.withValues(alpha: 0.04),
+                    blurRadius: 60,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: isDesktop
+                  ? Row(
+                      children: [
+                        // Halo derrière le logo
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: 230,
+                              height: 230,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: RadialGradient(
+                                  colors: [
+                                    AppColors.gold.withValues(alpha: 0.15),
+                                    Colors.transparent,
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Image.asset(
+                              'assets/images/logo_full.png',
+                              width: 200,
+                              height: 200,
+                              fit: BoxFit.contain,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 48),
+                        Expanded(child: _buildCtaContent()),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: 200,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: RadialGradient(
+                                  colors: [
+                                    AppColors.gold.withValues(alpha: 0.15),
+                                    Colors.transparent,
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Image.asset(
+                              'assets/images/logo_full.png',
+                              width: 170,
+                              height: 170,
+                              fit: BoxFit.contain,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 28),
+                        _buildCtaContent(),
+                      ],
+                    ),
+            ),
+
+            // Halo décoratif coin supérieur droit
+            Positioned(
+              top: -20,
+              right: -20,
+              child: IgnorePointer(
+                child: Container(
+                  width: 200,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        AppColors.gold.withValues(alpha: 0.08),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
+
+    if (disableAnimations) return content;
+
+    return content
+        .animate()
+        .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+        .slideY(begin: 0.04, end: 0, duration: 600.ms);
   }
 
   Widget _buildCtaContent() {
@@ -994,11 +1448,12 @@ class _DownloadCtaSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Gardez vos révisions dans votre poche.',
+          'Gardez vos révisions\ndans votre poche.',
           style: GoogleFonts.fraunces(
             fontSize: 28,
             fontWeight: FontWeight.w700,
             color: AppColors.text,
+            height: 1.25,
           ),
         ),
         const SizedBox(height: 14),
@@ -1007,10 +1462,10 @@ class _DownloadCtaSection extends StatelessWidget {
           style: TextStyle(
             color: AppColors.textMuted,
             fontSize: 15,
-            height: 1.6,
+            height: 1.65,
           ),
         ),
-        const SizedBox(height: 28),
+        const SizedBox(height: 32),
         const DownloadButton(),
       ],
     );
@@ -1018,7 +1473,7 @@ class _DownloadCtaSection extends StatelessWidget {
 }
 
 // =============================================================================
-// FAQ SECTION (Accordéon)
+// FAQ SECTION
 // =============================================================================
 class _FaqSection extends StatefulWidget {
   final bool disableAnimations;
@@ -1078,19 +1533,15 @@ class _FaqSectionState extends State<_FaqSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 72),
+    Widget content = Container(
+      padding: const EdgeInsets.symmetric(vertical: 80),
       child: ResponsiveContainer(
         child: Column(
           children: [
-            Text(
-              'Questions fréquentes',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.fraunces(
-                fontSize: 32,
-                fontWeight: FontWeight.w700,
-                color: AppColors.text,
-              ),
+            _SectionHeader(
+              title: 'Questions fréquentes',
+              subtitle: null,
+              disableAnimations: widget.disableAnimations,
             ),
             const SizedBox(height: 12),
             Wrap(
@@ -1101,22 +1552,24 @@ class _FaqSectionState extends State<_FaqSection> {
                   'Une autre question ? Écrivez-nous à ',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 15),
                 ),
-                InkWell(
-                  onTap: _openSupportEmail,
-                  child: const Text(
-                    'ngenou.support@gmail.com',
-                    style: TextStyle(
-                      color: AppColors.cyan,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: _openSupportEmail,
+                    child: const Text(
+                      'ngenou.support@gmail.com',
+                      style: TextStyle(
+                        color: AppColors.cyan,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 48),
+            const SizedBox(height: 52),
 
-            // Liste de questions
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 820),
               child: Column(
@@ -1125,16 +1578,29 @@ class _FaqSectionState extends State<_FaqSection> {
                   final isExpanded = _expandedIndices.contains(i);
 
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Container(
+                    padding: const EdgeInsets.only(bottom: 14),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
                       decoration: BoxDecoration(
-                        color: AppColors.card,
+                        color: isExpanded
+                            ? AppColors.card
+                            : AppColors.card.withValues(alpha: 0.7),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: isExpanded
-                              ? AppColors.cyan.withValues(alpha: 0.5)
+                              ? AppColors.cyan.withValues(alpha: 0.4)
                               : AppColors.cardBorder,
+                          width: isExpanded ? 1.5 : 1,
                         ),
+                        boxShadow: isExpanded
+                            ? [
+                                BoxShadow(
+                                  color: AppColors.cyan.withValues(alpha: 0.05),
+                                  blurRadius: 24,
+                                  offset: const Offset(0, 4),
+                                )
+                              ]
+                            : [],
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
@@ -1145,10 +1611,11 @@ class _FaqSectionState extends State<_FaqSection> {
                           shape: const Border(),
                           collapsedShape: const Border(),
                           iconColor: AppColors.cyan,
-                          collapsedIconColor: AppColors.textMuted,
+                          collapsedIconColor:
+                              AppColors.textMuted.withValues(alpha: 0.6),
                           tilePadding: const EdgeInsets.symmetric(
-                            horizontal: 22,
-                            vertical: 8,
+                            horizontal: 24,
+                            vertical: 10,
                           ),
                           title: Text(
                             item.question,
@@ -1160,13 +1627,14 @@ class _FaqSectionState extends State<_FaqSection> {
                           ),
                           children: [
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(22, 0, 22, 20),
+                              padding:
+                                  const EdgeInsets.fromLTRB(24, 0, 24, 22),
                               child: Text(
                                 item.answer,
                                 style: const TextStyle(
                                   color: AppColors.textMuted,
                                   fontSize: 14,
-                                  height: 1.6,
+                                  height: 1.65,
                                 ),
                               ),
                             ),
@@ -1182,6 +1650,13 @@ class _FaqSectionState extends State<_FaqSection> {
         ),
       ),
     );
+
+    if (widget.disableAnimations) return content;
+
+    return content
+        .animate()
+        .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+        .slideY(begin: 0.04, end: 0, duration: 600.ms);
   }
 }
 
@@ -1190,4 +1665,147 @@ class _FaqItem {
   final String answer;
 
   const _FaqItem({required this.question, required this.answer});
+}
+
+// =============================================================================
+// COMPOSANTS PARTAGÉS
+// =============================================================================
+
+/// En-tête de section avec titre Fraunces et sous-titre
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  final String? subtitle;
+  final bool disableAnimations;
+
+  const _SectionHeader({
+    required this.title,
+    required this.subtitle,
+    required this.disableAnimations,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isMobile = Responsive.isMobile(context);
+
+    Widget titleWidget = Text(
+      title,
+      textAlign: TextAlign.center,
+      style: GoogleFonts.fraunces(
+        fontSize: isMobile ? 26 : 34,
+        fontWeight: FontWeight.w700,
+        color: AppColors.text,
+        height: 1.2,
+      ),
+    );
+
+    if (!disableAnimations) {
+      titleWidget = titleWidget
+          .animate()
+          .fadeIn(duration: 500.ms, curve: Curves.easeOut)
+          .slideY(begin: 0.05, end: 0, duration: 500.ms);
+    }
+
+    Widget? subtitleWidget;
+    if (subtitle != null) {
+      subtitleWidget = Padding(
+        padding: const EdgeInsets.only(top: 14),
+        child: Text(
+          subtitle!,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.manrope(
+            fontSize: isMobile ? 15 : 16.5,
+            color: AppColors.textMuted,
+            height: 1.6,
+          ),
+        ),
+      );
+
+      if (!disableAnimations) {
+        subtitleWidget = subtitleWidget
+            .animate()
+            .fadeIn(duration: 500.ms, delay: 150.ms)
+            .slideY(begin: 0.04, end: 0, duration: 500.ms, delay: 150.ms);
+      }
+    }
+
+    return Column(
+      children: [
+        // Petit ornement décoratif au-dessus du titre
+        Container(
+          width: 36,
+          height: 3,
+          margin: const EdgeInsets.only(bottom: 20),
+          decoration: BoxDecoration(
+            gradient: AppColors.brandGradient,
+            borderRadius: BorderRadius.circular(99),
+          ),
+        ),
+        titleWidget,
+        if (subtitleWidget != null) subtitleWidget,
+      ],
+    );
+  }
+}
+
+/// Carte interactive avec hover élégant pour les onglets showcase
+class _HoverCard extends StatefulWidget {
+  final Widget child;
+  final VoidCallback onTap;
+  final bool isSelected;
+  final Color accentColor;
+
+  const _HoverCard({
+    required this.child,
+    required this.onTap,
+    required this.isSelected,
+    required this.accentColor,
+  });
+
+  @override
+  State<_HoverCard> createState() => _HoverCardState();
+}
+
+class _HoverCardState extends State<_HoverCard> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: widget.isSelected
+                ? AppColors.cardHover
+                : _hovering
+                    ? AppColors.card.withValues(alpha: 0.9)
+                    : AppColors.card,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: widget.isSelected
+                  ? widget.accentColor.withValues(alpha: 0.6)
+                  : _hovering
+                      ? widget.accentColor.withValues(alpha: 0.2)
+                      : AppColors.cardBorder,
+              width: widget.isSelected ? 1.5 : 1,
+            ),
+            boxShadow: widget.isSelected
+                ? [
+                    BoxShadow(
+                      color: widget.accentColor.withValues(alpha: 0.10),
+                      blurRadius: 24,
+                      offset: const Offset(0, 6),
+                    ),
+                  ]
+                : [],
+          ),
+          child: widget.child,
+        ),
+      ),
+    );
+  }
 }

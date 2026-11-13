@@ -38,7 +38,7 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
         Responsive.isMobile(context) || Responsive.isTablet(context);
 
     // ==========================================
-    // VERSION MOBILE / TABLETTE : PILULE FLOTTANTE + HALO JAUNE
+    // VERSION MOBILE / TABLETTE : PILULE FLOTTANTE
     // ==========================================
     if (isMobile) {
       return SizedBox(
@@ -46,22 +46,22 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // Flou jaune léger du logo à l'angle supérieur droit (vers l'extrémité)
+            // Halo or décoratif en arrière-plan
             Positioned(
-              top: -35,
-              right: -35,
+              top: -40,
+              right: -40,
               child: IgnorePointer(
                 child: ImageFiltered(
-                  imageFilter: ImageFilter.blur(sigmaX: 36, sigmaY: 36),
+                  imageFilter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
                   child: Container(
-                    width: 175,
-                    height: 175,
+                    width: 180,
+                    height: 180,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          AppColors.gold.withValues(alpha: 0.38),
-                          AppColors.gold.withValues(alpha: 0.14),
+                          AppColors.gold.withValues(alpha: 0.35),
+                          AppColors.gold.withValues(alpha: 0.12),
                           Colors.transparent,
                         ],
                         stops: const [0.0, 0.45, 1.0],
@@ -72,30 +72,34 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
 
-            // Barre de navigation flottante en forme de pilule
+            // Barre de navigation flottante en pilule avec backdrop blur
             Center(
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(999),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                    filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                     child: Container(
                       height: 54,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0C162E).withValues(alpha: 0.80),
+                        color: const Color(0xFF0C162E).withValues(alpha: 0.82),
                         borderRadius: BorderRadius.circular(999),
                         border: Border.all(
-                          color: AppColors.cardBorder.withValues(alpha: 0.9),
+                          color: AppColors.cardBorder.withValues(alpha: 0.85),
                           width: 1.2,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.35),
-                            blurRadius: 16,
-                            offset: const Offset(0, 4),
+                            color: Colors.black.withValues(alpha: 0.38),
+                            blurRadius: 20,
+                            offset: const Offset(0, 6),
+                          ),
+                          BoxShadow(
+                            color: AppColors.cyan.withValues(alpha: 0.04),
+                            blurRadius: 30,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
@@ -103,7 +107,7 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Logo & Titre (Police conservée à l'identique)
+                          // Logo & Titre
                           InkWell(
                             onTap: () => context.go('/'),
                             borderRadius: BorderRadius.circular(999),
@@ -117,19 +121,19 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
                                 children: [
                                   Image.asset(
                                     'assets/images/logo.png',
-                                    width: 34,
-                                    height: 34,
+                                    width: 32,
+                                    height: 32,
                                     errorBuilder: (_, __, ___) => const Icon(
                                       Icons.school_rounded,
                                       color: AppColors.cyan,
-                                      size: 30,
+                                      size: 28,
                                     ),
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
                                     'Ngenou',
                                     style: GoogleFonts.fraunces(
-                                      fontSize: 22,
+                                      fontSize: 21,
                                       fontWeight: FontWeight.w700,
                                       color: AppColors.text,
                                       letterSpacing: -0.5,
@@ -141,18 +145,7 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
                           ),
 
                           // Menu Hamburger
-                          IconButton(
-                            icon: const Icon(
-                              Icons.menu_rounded,
-                              color: AppColors.text,
-                              size: 26,
-                            ),
-                            splashRadius: 22,
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(
-                              minWidth: 40,
-                              minHeight: 40,
-                            ),
+                          _AnimatedMenuButton(
                             onPressed: () => _openMobileMenu(context),
                           ),
                         ],
@@ -168,81 +161,87 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     // ==========================================
-    // VERSION DESKTOP
+    // VERSION DESKTOP : Barre avec backdrop blur
     // ==========================================
-    return Container(
-      height: 76,
-      decoration: BoxDecoration(
-        color: AppColors.background.withValues(alpha: 0.85),
-        border: const Border(
-          bottom: BorderSide(color: AppColors.cardBorder, width: 1),
-        ),
-      ),
-      child: ResponsiveContainer(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Logo & Titre
-            InkWell(
-              onTap: () => context.go('/'),
-              borderRadius: BorderRadius.circular(8),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      'assets/images/logo.png',
-                      width: 36,
-                      height: 36,
-                      errorBuilder: (_, __, ___) => const Icon(
-                        Icons.school_rounded,
-                        color: AppColors.cyan,
-                        size: 32,
-                      ),
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          height: 76,
+          decoration: BoxDecoration(
+            color: AppColors.background.withValues(alpha: 0.80),
+            border: const Border(
+              bottom: BorderSide(color: AppColors.cardBorder, width: 1),
+            ),
+          ),
+          child: ResponsiveContainer(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Logo & Titre
+                InkWell(
+                  onTap: () => context.go('/'),
+                  borderRadius: BorderRadius.circular(10),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/logo.png',
+                          width: 36,
+                          height: 36,
+                          errorBuilder: (_, __, ___) => const Icon(
+                            Icons.school_rounded,
+                            color: AppColors.cyan,
+                            size: 32,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Ngenou',
+                          style: GoogleFonts.fraunces(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.text,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Ngenou',
-                      style: GoogleFonts.fraunces(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.text,
-                        letterSpacing: -0.5,
-                      ),
+                  ),
+                ),
+
+                // Liens Desktop
+                Row(
+                  children: [
+                    _NavLink(
+                      title: 'Aperçu',
+                      onTap: () => _handleNav(context, '#showcase'),
+                    ),
+                    _NavLink(
+                      title: 'Fonctionnalités',
+                      onTap: () => _handleNav(context, '#features'),
+                    ),
+                    _NavLink(
+                      title: 'Nouveautés',
+                      onTap: () => _handleNav(context, '/nouveautes'),
+                    ),
+                    _NavLink(
+                      title: 'FAQ',
+                      onTap: () => _handleNav(context, '#faq'),
+                    ),
+                    _NavLink(
+                      title: 'Confidentialité & CGU',
+                      onTap: () => _handleNav(context, '/confidentialite'),
                     ),
                   ],
                 ),
-              ),
-            ),
-
-            // Liens Desktop
-            Row(
-              children: [
-                _NavLink(
-                  title: 'Aperçu',
-                  onTap: () => _handleNav(context, '#showcase'),
-                ),
-                _NavLink(
-                  title: 'Fonctionnalités',
-                  onTap: () => _handleNav(context, '#features'),
-                ),
-                _NavLink(
-                  title: 'Nouveautés',
-                  onTap: () => _handleNav(context, '/nouveautes'),
-                ),
-                _NavLink(
-                  title: 'FAQ',
-                  onTap: () => _handleNav(context, '#faq'),
-                ),
-                _NavLink(
-                  title: 'Confidentialité & CGU',
-                  onTap: () => _handleNav(context, '/confidentialite'),
-                ),
+                const DownloadButton(isCompact: true),
               ],
             ),
-            const DownloadButton(isCompact: true),
-          ],
+          ),
         ),
       ),
     );
@@ -251,77 +250,233 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
   void _openMobileMenu(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.card,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetContext) => _MobileMenuSheet(
+        onNavSelected: (target) {
+          Navigator.pop(sheetContext);
+          _handleNav(context, target);
+        },
       ),
-      builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+    );
+  }
+}
+
+/// Bouton hamburger avec animation
+class _AnimatedMenuButton extends StatefulWidget {
+  final VoidCallback onPressed;
+
+  const _AnimatedMenuButton({required this.onPressed});
+
+  @override
+  State<_AnimatedMenuButton> createState() => _AnimatedMenuButtonState();
+}
+
+class _AnimatedMenuButtonState extends State<_AnimatedMenuButton> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: GestureDetector(
+        onTap: widget.onPressed,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: _hovering
+                ? AppColors.cardHover.withValues(alpha: 0.6)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            Icons.menu_rounded,
+            color: _hovering ? AppColors.text : AppColors.text.withValues(alpha: 0.85),
+            size: 24,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Sheet de menu mobile amélioré
+class _MobileMenuSheet extends StatelessWidget {
+  final void Function(String) onNavSelected;
+
+  const _MobileMenuSheet({required this.onNavSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF0E1830).withValues(alpha: 0.96),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            border: Border.all(
+              color: AppColors.cardBorder.withValues(alpha: 0.6),
+              width: 1,
+            ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Handle bar
+                  Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.cardBorder.withValues(alpha: 1.0),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Titre du menu
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Navigation',
+                          style: GoogleFonts.fraunces(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  _MenuTile(
+                    icon: Icons.phone_iphone_rounded,
+                    title: 'Aperçu de l\'application',
+                    iconColor: AppColors.cyan,
+                    onTap: () => onNavSelected('#showcase'),
+                  ),
+                  _MenuTile(
+                    icon: Icons.auto_awesome_rounded,
+                    title: 'Fonctionnalités',
+                    iconColor: AppColors.gold,
+                    onTap: () => onNavSelected('#features'),
+                  ),
+                  _MenuTile(
+                    icon: Icons.history_rounded,
+                    title: 'Nouveautés & Mises à jour',
+                    iconColor: AppColors.cyan,
+                    onTap: () => onNavSelected('/nouveautes'),
+                  ),
+                  _MenuTile(
+                    icon: Icons.help_outline_rounded,
+                    title: 'FAQ',
+                    iconColor: AppColors.gold,
+                    onTap: () => onNavSelected('#faq'),
+                  ),
+                  _MenuTile(
+                    icon: Icons.policy_rounded,
+                    title: 'Confidentialité & CGU',
+                    iconColor: AppColors.textMuted,
+                    onTap: () => onNavSelected('/confidentialite'),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Bouton téléchargement pleine largeur
+                  SizedBox(
+                    width: double.infinity,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppColors.cardBorder.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      padding: const EdgeInsets.all(4),
+                      child: const DownloadButton(),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Tuile de menu mobile avec hover
+class _MenuTile extends StatefulWidget {
+  final IconData icon;
+  final String title;
+  final Color iconColor;
+  final VoidCallback onTap;
+
+  const _MenuTile({
+    required this.icon,
+    required this.title,
+    required this.iconColor,
+    required this.onTap,
+  });
+
+  @override
+  State<_MenuTile> createState() => _MenuTileState();
+}
+
+class _MenuTileState extends State<_MenuTile> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          margin: const EdgeInsets.symmetric(vertical: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: _hovering
+                ? AppColors.cardHover.withValues(alpha: 0.7)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Row(
             children: [
               Container(
-                width: 40,
-                height: 4,
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.cardBorder,
-                  borderRadius: BorderRadius.circular(2),
+                  color: widget.iconColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(widget.icon, color: widget.iconColor, size: 18),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  widget.title,
+                  style: GoogleFonts.manrope(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.text,
+                  ),
                 ),
               ),
-              const SizedBox(height: 24),
-              ListTile(
-                leading: const Icon(Icons.phone_iphone_rounded,
-                    color: AppColors.cyan),
-                title: const Text('Aperçu de l\'application'),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _handleNav(context, '#showcase');
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.auto_awesome_rounded,
-                    color: AppColors.gold),
-                title: const Text('Fonctionnalités'),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _handleNav(context, '#features');
-                },
-              ),
-              ListTile(
-                leading:
-                    const Icon(Icons.history_rounded, color: AppColors.cyan),
-                title: const Text('Nouveautés & Mises à jour'),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _handleNav(context, '/nouveautes');
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.help_outline_rounded,
-                    color: AppColors.gold),
-                title: const Text('FAQ'),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _handleNav(context, '#faq');
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.policy_rounded,
-                    color: AppColors.textMuted),
-                title: const Text('Confidentialité & CGU'),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _handleNav(context, '/confidentialite');
-                },
-              ),
-              const SizedBox(height: 16),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: DownloadButton(),
-                ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: AppColors.textMuted.withValues(alpha: 0.5),
+                size: 14,
               ),
             ],
           ),
@@ -331,28 +486,45 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-class _NavLink extends StatelessWidget {
+/// Lien de navigation desktop avec hover élégant
+class _NavLink extends StatefulWidget {
   final String title;
   final VoidCallback onTap;
 
   const _NavLink({required this.title, required this.onTap});
 
   @override
+  State<_NavLink> createState() => _NavLinkState();
+}
+
+class _NavLinkState extends State<_NavLink> {
+  bool _hovering = false;
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        hoverColor: AppColors.cardHover,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          child: Text(
-            title,
-            style: const TextStyle(
-              color: AppColors.text,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovering = true),
+        onExit: (_) => setState(() => _hovering = false),
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: _hovering
+                  ? AppColors.cardHover.withValues(alpha: 0.5)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              widget.title,
+              style: TextStyle(
+                color: _hovering ? AppColors.text : AppColors.text.withValues(alpha: 0.80),
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ),
