@@ -1,0 +1,27 @@
+# Flutter Web app: the compiled build is committed in build/web
+# (generated locally with `flutter build web --release`).
+[build]
+  publish = "build/web"
+  command = ""
+
+# SPA fallback for go_router routes (e.g. /admin)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+
+[[headers]]
+  for = "/admin*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
