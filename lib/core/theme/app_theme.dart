@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
@@ -7,8 +7,10 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData get darkTheme {
-    final baseTextTheme = GoogleFonts.manropeTextTheme(ThemeData.dark().textTheme);
-    final frauncesTheme = GoogleFonts.frauncesTextTheme(ThemeData.dark().textTheme);
+    final baseTextTheme =
+        GoogleFonts.manropeTextTheme(ThemeData.dark().textTheme);
+    final frauncesTheme =
+        GoogleFonts.frauncesTextTheme(ThemeData.dark().textTheme);
 
     final textTheme = baseTextTheme.copyWith(
       displayLarge: frauncesTheme.displayLarge?.copyWith(
@@ -96,7 +98,8 @@ class AppTheme {
         fillColor: const Color(0xFF0B1426),
         hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 14),
         labelStyle: const TextStyle(color: AppColors.textMuted, fontSize: 14),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: AppColors.cardBorder),

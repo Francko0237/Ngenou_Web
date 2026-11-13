@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -192,7 +192,8 @@ class _ReleaseCard extends StatelessWidget {
     String dateStr = 'Récemment';
     if (release.publishedAt != null) {
       try {
-        dateStr = DateFormat('d MMMM yyyy', 'fr_FR').format(release.publishedAt!);
+        dateStr =
+            DateFormat('d MMMM yyyy', 'fr_FR').format(release.publishedAt!);
       } catch (_) {
         final d = release.publishedAt!;
         dateStr = '${d.day}/${d.month}/${d.year}';
@@ -205,7 +206,9 @@ class _ReleaseCard extends StatelessWidget {
         color: AppColors.card,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isLatest ? AppColors.cyan.withValues(alpha: 0.6) : AppColors.cardBorder,
+          color: isLatest
+              ? AppColors.cyan.withValues(alpha: 0.6)
+              : AppColors.cardBorder,
           width: isLatest ? 1.5 : 1,
         ),
         boxShadow: isLatest
@@ -341,8 +344,8 @@ class _ReleaseCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   ...release.features.map((feature) {
-                    final hasImage =
-                        feature.imageUrl != null && feature.imageUrl!.isNotEmpty;
+                    final hasImage = feature.imageUrl != null &&
+                        feature.imageUrl!.isNotEmpty;
 
                     return Container(
                       margin: const EdgeInsets.only(bottom: 20),

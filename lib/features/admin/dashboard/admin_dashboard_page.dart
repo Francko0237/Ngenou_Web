@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -59,7 +59,8 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Annuler', style: TextStyle(color: AppColors.textMuted)),
+            child: const Text('Annuler',
+                style: TextStyle(color: AppColors.textMuted)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -84,7 +85,8 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Version ${release.versionName} supprimée avec succès.'),
+              content:
+                  Text('Version ${release.versionName} supprimée avec succès.'),
               backgroundColor: AppColors.success,
             ),
           );
@@ -170,12 +172,14 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
         actions: [
           IconButton(
             tooltip: 'Voir le site public',
-            icon: const Icon(Icons.open_in_new_rounded, color: AppColors.cyan, size: 20),
+            icon: const Icon(Icons.open_in_new_rounded,
+                color: AppColors.cyan, size: 20),
             onPressed: () => context.go('/'),
           ),
           IconButton(
             tooltip: 'Déconnexion',
-            icon: const Icon(Icons.logout_rounded, color: AppColors.error, size: 20),
+            icon: const Icon(Icons.logout_rounded,
+                color: AppColors.error, size: 20),
             onPressed: _handleLogout,
           ),
           const SizedBox(width: 8),
@@ -228,22 +232,24 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
                       width: isMobile ? double.infinity : 320,
                       child: TextField(
                         controller: _searchController,
-                        onChanged: (val) => setState(() => _searchQuery = val.trim()),
+                        onChanged: (val) =>
+                            setState(() => _searchQuery = val.trim()),
                         decoration: InputDecoration(
                           hintText: 'Rechercher une version ou un titre...',
                           prefixIcon: const Icon(Icons.search_rounded,
                               color: AppColors.textMuted, size: 20),
                           suffixIcon: _searchQuery.isNotEmpty
                               ? IconButton(
-                                  icon: const Icon(Icons.clear_rounded, size: 18),
+                                  icon:
+                                      const Icon(Icons.clear_rounded, size: 18),
                                   onPressed: () {
                                     _searchController.clear();
                                     setState(() => _searchQuery = '');
                                   },
                                 )
                               : null,
-                          contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 12),
                         ),
                       ),
                     ),
@@ -274,13 +280,15 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
                             setState(() => _filterStatus = val.first);
                           },
                           style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.resolveWith((states) {
+                            backgroundColor:
+                                WidgetStateProperty.resolveWith((states) {
                               if (states.contains(WidgetState.selected)) {
                                 return AppColors.cyan.withValues(alpha: 0.2);
                               }
                               return Colors.transparent;
                             }),
-                            foregroundColor: WidgetStateProperty.resolveWith((states) {
+                            foregroundColor:
+                                WidgetStateProperty.resolveWith((states) {
                               if (states.contains(WidgetState.selected)) {
                                 return AppColors.cyan;
                               }
@@ -322,7 +330,8 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
                   decoration: BoxDecoration(
                     color: AppColors.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                    border: Border.all(
+                        color: AppColors.error.withValues(alpha: 0.3)),
                   ),
                   child: Text('Erreur de chargement : $e',
                       style: const TextStyle(color: AppColors.error)),
@@ -331,9 +340,15 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
                   // Filtrer et trier
                   var filtered = releases.where((r) {
                     final matchesQuery = _searchQuery.isEmpty ||
-                        r.versionName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-                        r.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-                        r.notes.toLowerCase().contains(_searchQuery.toLowerCase());
+                        r.versionName
+                            .toLowerCase()
+                            .contains(_searchQuery.toLowerCase()) ||
+                        r.title
+                            .toLowerCase()
+                            .contains(_searchQuery.toLowerCase()) ||
+                        r.notes
+                            .toLowerCase()
+                            .contains(_searchQuery.toLowerCase());
 
                     if (!matchesQuery) return false;
 
@@ -482,7 +497,8 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
     String dateStr = 'Non publiée';
     if (release.publishedAt != null) {
       try {
-        dateStr = DateFormat('d MMM yyyy', 'fr_FR').format(release.publishedAt!);
+        dateStr =
+            DateFormat('d MMM yyyy', 'fr_FR').format(release.publishedAt!);
       } catch (_) {
         final d = release.publishedAt!;
         dateStr = '${d.day}/${d.month}/${d.year}';
@@ -560,7 +576,9 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
               child: Text(
                 release.isPublished ? 'Publiée' : 'Brouillon',
                 style: TextStyle(
-                  color: release.isPublished ? AppColors.success : AppColors.textMuted,
+                  color: release.isPublished
+                      ? AppColors.success
+                      : AppColors.textMuted,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                 ),
@@ -610,7 +628,8 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
         const SizedBox(height: 10),
         Row(
           children: [
-            const Icon(Icons.extension_rounded, size: 14, color: AppColors.textMuted),
+            const Icon(Icons.extension_rounded,
+                size: 14, color: AppColors.textMuted),
             const SizedBox(width: 6),
             Text(
               '${release.features.length} fonctionnalité(s)',
@@ -637,9 +656,13 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
       children: [
         // Bouton Publier / Dépublier
         IconButton(
-          tooltip: release.isPublished ? 'Dépublier (rendre brouillon)' : 'Publier en ligne',
+          tooltip: release.isPublished
+              ? 'Dépublier (rendre brouillon)'
+              : 'Publier en ligne',
           icon: Icon(
-            release.isPublished ? Icons.visibility_off_outlined : Icons.publish_rounded,
+            release.isPublished
+                ? Icons.visibility_off_outlined
+                : Icons.publish_rounded,
             color: release.isPublished ? AppColors.gold : AppColors.success,
           ),
           onPressed: () => _handleTogglePublish(release),
@@ -653,7 +676,8 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
         // Bouton Supprimer
         IconButton(
           tooltip: 'Supprimer définitivement',
-          icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error),
+          icon:
+              const Icon(Icons.delete_outline_rounded, color: AppColors.error),
           onPressed: () => _handleDelete(release),
         ),
       ],

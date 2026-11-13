@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -17,10 +17,10 @@ class DownloadButton extends ConsumerWidget {
     this.onDownloaded,
   });
 
-  Future<void> _launchDownload(BuildContext context, AppRelease? release) async {
-    final apkUrl = release?.apkUrl?.isNotEmpty == true
-        ? release!.apkUrl!
-        : 'Ngenou.apk';
+  Future<void> _launchDownload(
+      BuildContext context, AppRelease? release) async {
+    final apkUrl =
+        release?.apkUrl?.isNotEmpty == true ? release!.apkUrl! : 'Ngenou.apk';
 
     final uri = Uri.parse(apkUrl);
     try {
@@ -79,7 +79,8 @@ class DownloadButton extends ConsumerWidget {
       String dateStr = 'Dernière version';
       if (release.publishedAt != null) {
         try {
-          dateStr = DateFormat('d MMMM yyyy', 'fr_FR').format(release.publishedAt!);
+          dateStr =
+              DateFormat('d MMMM yyyy', 'fr_FR').format(release.publishedAt!);
         } catch (_) {
           final d = release.publishedAt!;
           dateStr = '${d.day}/${d.month}/${d.year}';

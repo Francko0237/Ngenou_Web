@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_colors.dart';
@@ -34,7 +34,8 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Responsive.isMobile(context) || Responsive.isTablet(context);
+    final isMobile =
+        Responsive.isMobile(context) || Responsive.isTablet(context);
 
     // ==========================================
     // VERSION MOBILE / TABLETTE : PILULE FLOTTANTE + HALO JAUNE
@@ -74,7 +75,8 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
             // Barre de navigation flottante en forme de pilule
             Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(999),
                   child: BackdropFilter(
@@ -269,7 +271,8 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
               ),
               const SizedBox(height: 24),
               ListTile(
-                leading: const Icon(Icons.phone_iphone_rounded, color: AppColors.cyan),
+                leading: const Icon(Icons.phone_iphone_rounded,
+                    color: AppColors.cyan),
                 title: const Text('Aperçu de l\'application'),
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -277,7 +280,8 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.auto_awesome_rounded, color: AppColors.gold),
+                leading: const Icon(Icons.auto_awesome_rounded,
+                    color: AppColors.gold),
                 title: const Text('Fonctionnalités'),
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -285,7 +289,8 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.history_rounded, color: AppColors.cyan),
+                leading:
+                    const Icon(Icons.history_rounded, color: AppColors.cyan),
                 title: const Text('Nouveautés & Mises à jour'),
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -293,7 +298,8 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.help_outline_rounded, color: AppColors.gold),
+                leading: const Icon(Icons.help_outline_rounded,
+                    color: AppColors.gold),
                 title: const Text('FAQ'),
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -301,7 +307,8 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.policy_rounded, color: AppColors.textMuted),
+                leading: const Icon(Icons.policy_rounded,
+                    color: AppColors.textMuted),
                 title: const Text('Confidentialité & CGU'),
                 onTap: () {
                   Navigator.pop(sheetContext);

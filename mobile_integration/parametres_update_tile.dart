@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'update_checker_service.dart';
 
 /// Widget à insérer dans la page Paramètres de l'application mobile Ngenou
@@ -107,7 +107,9 @@ class _ParametresUpdateTileState extends State<ParametresUpdateTile> {
                       size: 18,
                     ),
               label: Text(
-                _isChecking ? 'Vérification en cours...' : 'Vérifier les mises à jour',
+                _isChecking
+                    ? 'Vérification en cours...'
+                    : 'Vérifier les mises à jour',
                 style: const TextStyle(
                   color: Color(0xFF3CC8E8),
                   fontWeight: FontWeight.w700,

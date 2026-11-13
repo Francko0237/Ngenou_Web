@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import '../theme/app_colors.dart';
 
 /// Widget de présentation double smartphone réaliste en composition décalée
@@ -184,7 +184,8 @@ class _RealisticPhone extends StatelessWidget {
         children: [
           // ── A. Fond d'écran sombre ──────────────────────────────────────
           Padding(
-            padding: EdgeInsets.fromLTRB(leftInset, topInset, rightInset, bottomInset),
+            padding: EdgeInsets.fromLTRB(
+                leftInset, topInset, rightInset, bottomInset),
             child: Container(
               decoration: BoxDecoration(
                 color: const Color(0xFF0A101D),

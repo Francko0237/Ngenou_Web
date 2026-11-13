@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import '../theme/app_colors.dart';
 
 /// Maquette de smartphone réaliste pour présenter les captures d'écran de l'application
@@ -58,7 +58,8 @@ class PhoneMockup extends StatelessWidget {
             children: [
               // 1. Fond d'écran sombre
               Padding(
-                padding: EdgeInsets.fromLTRB(leftInset, topInset, rightInset, bottomInset),
+                padding: EdgeInsets.fromLTRB(
+                    leftInset, topInset, rightInset, bottomInset),
                 child: Container(
                   decoration: BoxDecoration(
                     color: const Color(0xFF0A101D),

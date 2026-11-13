@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'update_dialog.dart';
@@ -102,7 +102,8 @@ class UpdateChecker {
         );
       } else {
         if (isManual && context.mounted) {
-          _showSnackBar(context, 'Votre application Ngenou est à jour (v$kCurrentVersionName).');
+          _showSnackBar(context,
+              'Votre application Ngenou est à jour (v$kCurrentVersionName).');
         }
       }
     } catch (e) {
@@ -116,11 +117,13 @@ class UpdateChecker {
     }
   }
 
-  static void _showSnackBar(BuildContext context, String message, {bool isError = false}) {
+  static void _showSnackBar(BuildContext context, String message,
+      {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? const Color(0xFFFF5C5C) : const Color(0xFF2DD4BF),
+        backgroundColor:
+            isError ? const Color(0xFFFF5C5C) : const Color(0xFF2DD4BF),
         behavior: SnackBarBehavior.floating,
       ),
     );

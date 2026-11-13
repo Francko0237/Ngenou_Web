@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -39,7 +39,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
   int _highestExistingVersionCode = 0;
   List<ReleaseFeature> _features = [];
 
-  bool get isEditing => widget.releaseId != null && widget.releaseId!.isNotEmpty;
+  bool get isEditing =>
+      widget.releaseId != null && widget.releaseId!.isNotEmpty;
 
   @override
   void initState() {
@@ -128,7 +129,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Fichier APK téléversé avec succès dans le bucket apks !'),
+            content:
+                Text('Fichier APK téléversé avec succès dans le bucket apks !'),
             backgroundColor: AppColors.success,
           ),
         );
@@ -149,7 +151,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
     }
   }
 
-  Future<void> _openFeatureEditorDialog([ReleaseFeature? existing, int? index]) async {
+  Future<void> _openFeatureEditorDialog(
+      [ReleaseFeature? existing, int? index]) async {
     final titleCtrl = TextEditingController(text: existing?.title ?? '');
     final bodyCtrl = TextEditingController(text: existing?.body ?? '');
     String? imageUrl = existing?.imageUrl;
@@ -222,7 +225,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: localPreviewBytes != null
-                                ? Image.memory(localPreviewBytes!, fit: BoxFit.contain)
+                                ? Image.memory(localPreviewBytes!,
+                                    fit: BoxFit.contain)
                                 : Image.network(
                                     imageUrl!,
                                     fit: BoxFit.contain,
@@ -243,15 +247,22 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                           onPressed: isUploadingImage
                               ? null
                               : () async {
-                                  final messenger = ScaffoldMessenger.of(context);
+                                  final messenger =
+                                      ScaffoldMessenger.of(context);
                                   final result =
                                       await FilePicker.platform.pickFiles(
                                     type: FileType.custom,
-                                    allowedExtensions: ['png', 'jpg', 'jpeg', 'webp'],
+                                    allowedExtensions: [
+                                      'png',
+                                      'jpg',
+                                      'jpeg',
+                                      'webp'
+                                    ],
                                     withData: true,
                                   );
 
-                                  if (result == null || result.files.isEmpty) return;
+                                  if (result == null || result.files.isEmpty)
+                                    return;
                                   final file = result.files.first;
                                   if (file.bytes == null) return;
 
@@ -273,7 +284,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                                   });
 
                                   try {
-                                    final repo = ref.read(releaseRepositoryProvider);
+                                    final repo =
+                                        ref.read(releaseRepositoryProvider);
                                     final uploadedUrl = await repo.uploadMedia(
                                       bytes: file.bytes!,
                                       fileName: file.name,
@@ -283,7 +295,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                                       isUploadingImage = false;
                                     });
                                   } catch (e) {
-                                    setDialogState(() => isUploadingImage = false);
+                                    setDialogState(
+                                        () => isUploadingImage = false);
                                     messenger.showSnackBar(
                                       SnackBar(
                                         content: Text('Erreur upload : $e'),
@@ -296,11 +309,15 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                               ? const SizedBox(
                                   width: 16,
                                   height: 16,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2),
                                 )
-                              : const Icon(Icons.cloud_upload_outlined, size: 18),
+                              : const Icon(Icons.cloud_upload_outlined,
+                                  size: 18),
                           label: Text(
-                            imageUrl != null ? 'Changer l\'image' : 'Téléverser image',
+                            imageUrl != null
+                                ? 'Changer l\'image'
+                                : 'Téléverser image',
                           ),
                         ),
                         if (imageUrl != null) ...[
@@ -337,7 +354,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                             bodyCtrl.text.trim().isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Veuillez renseigner le titre et la description.'),
+                              content: Text(
+                                  'Veuillez renseigner le titre et la description.'),
                               backgroundColor: AppColors.warning,
                             ),
                           );
@@ -503,7 +521,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text('Nom de version (version_name) *',
-                                  style: TextStyle(fontWeight: FontWeight.w600)),
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.w600)),
                               const SizedBox(height: 8),
                               TextFormField(
                                 controller: _versionNameController,
@@ -527,14 +546,16 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text('Code de build (version_code) *',
-                                  style: TextStyle(fontWeight: FontWeight.w600)),
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.w600)),
                               const SizedBox(height: 8),
                               TextFormField(
                                 controller: _versionCodeController,
                                 keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
                                   hintText: 'Ex: 12',
-                                  helperText: 'Dernier existant : $_highestExistingVersionCode',
+                                  helperText:
+                                      'Dernier existant : $_highestExistingVersionCode',
                                 ),
                                 validator: (val) {
                                   final num = int.tryParse(val ?? '');
@@ -556,7 +577,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                     TextFormField(
                       controller: _titleController,
                       decoration: const InputDecoration(
-                        hintText: 'Ex: Mise à jour majeure : Ngenou Assets & Mode Hors-Ligne',
+                        hintText:
+                            'Ex: Mise à jour majeure : Ngenou Assets & Mode Hors-Ligne',
                       ),
                       validator: (val) {
                         if (val == null || val.trim().isEmpty) {
@@ -573,7 +595,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                       controller: _notesController,
                       maxLines: 4,
                       decoration: const InputDecoration(
-                        hintText: 'Décrivez les nouveautés clés de cette version...',
+                        hintText:
+                            'Décrivez les nouveautés clés de cette version...',
                       ),
                       validator: (val) {
                         if (val == null || val.trim().isEmpty) {
@@ -591,7 +614,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                   title: 'Fichier APK & Téléchargement',
                   icon: Icons.android_rounded,
                   children: [
-                    const Text('Lien du fichier APK (URL externe ou upload dans le bucket "apks")',
+                    const Text(
+                        'Lien du fichier APK (URL externe ou upload dans le bucket "apks")',
                         style: TextStyle(fontWeight: FontWeight.w600)),
                     const SizedBox(height: 8),
                     Row(
@@ -601,7 +625,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                             controller: _apkUrlController,
                             decoration: const InputDecoration(
                               hintText: 'https://ngenou.top/Ngenou.apk',
-                              prefixIcon: Icon(Icons.link_rounded, color: AppColors.textMuted),
+                              prefixIcon: Icon(Icons.link_rounded,
+                                  color: AppColors.textMuted),
                             ),
                           ),
                         ),
@@ -612,7 +637,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                               ? const SizedBox(
                                   width: 16,
                                   height: 16,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2),
                                 )
                               : const Icon(Icons.upload_file_rounded),
                           label: const Text('Uploader APK'),
@@ -630,7 +656,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                       ),
                       subtitle: const Text(
                         'Si activé, l\'application mobile affichera un dialogue bloquant non-fermable invitant à mettre à jour.',
-                        style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                        style:
+                            TextStyle(color: AppColors.textMuted, fontSize: 13),
                       ),
                       value: _forceUpdate,
                       onChanged: (val) => setState(() => _forceUpdate = val),
@@ -645,7 +672,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                       ),
                       subtitle: const Text(
                         'Si désactivé, la version sera conservée en brouillon et invisible pour le grand public.',
-                        style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                        style:
+                            TextStyle(color: AppColors.textMuted, fontSize: 13),
                       ),
                       value: _isPublished,
                       onChanged: (val) => setState(() => _isPublished = val),
@@ -656,14 +684,16 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
 
                 // Bloc Fonctionnalités de cette version
                 _buildCardSection(
-                  title: 'Fonctionnalités de cette version (${_features.length})',
+                  title:
+                      'Fonctionnalités de cette version (${_features.length})',
                   icon: Icons.auto_awesome_rounded,
                   action: ElevatedButton.icon(
                     onPressed: () => _openFeatureEditorDialog(),
                     icon: const Icon(Icons.add_rounded, size: 18),
                     label: const Text('Ajouter'),
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
                     ),
                   ),
                   children: [
@@ -711,7 +741,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                                 const Icon(Icons.drag_indicator_rounded,
                                     color: AppColors.textMuted),
                                 const SizedBox(width: 12),
-                                if (feat.imageUrl != null && feat.imageUrl!.isNotEmpty) ...[
+                                if (feat.imageUrl != null &&
+                                    feat.imageUrl!.isNotEmpty) ...[
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
                                     child: Image.network(
@@ -730,7 +761,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                                 ],
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         feat.title,
@@ -802,7 +834,8 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                               isEditing
                                   ? 'Mettre à jour la version'
                                   : 'Enregistrer la version',
-                              style: const TextStyle(fontWeight: FontWeight.w800),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w800),
                             ),
                     ),
                   ],

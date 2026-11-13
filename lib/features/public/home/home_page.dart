@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -68,7 +68,8 @@ class _HomePageState extends State<HomePage> {
             _ShowcaseSection(
               key: _showcaseKey,
               selectedIndex: _selectedTabIndex,
-              onTabChanged: (index) => setState(() => _selectedTabIndex = index),
+              onTabChanged: (index) =>
+                  setState(() => _selectedTabIndex = index),
               disableAnimations: disableAnimations,
             ),
             _BentoFeaturesSection(
@@ -321,7 +322,8 @@ class _ShowcaseSection extends StatelessWidget {
       ],
       frontScreenshot: 'assets/screenshots/Defis1.png',
       backScreenshot: 'assets/screenshots/Defis2.png',
-      caption: 'Défi du jour : QCM interactif avec score et correction immédiate',
+      caption:
+          'Défi du jour : QCM interactif avec score et correction immédiate',
     ),
     _ShowcaseTab(
       title: 'Extensions Ngenou Assets',
@@ -532,7 +534,8 @@ class _ShowcaseSection extends StatelessWidget {
                       style: GoogleFonts.manrope(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
-                        color: isSelected ? AppColors.text : AppColors.textMuted,
+                        color:
+                            isSelected ? AppColors.text : AppColors.textMuted,
                       ),
                     ),
                   ),
@@ -693,7 +696,8 @@ class _BentoFeaturesSection extends StatelessWidget {
                         child: _BentoCard(
                           icon: Icons.phone_android_rounded,
                           accent: AppColors.gold,
-                          title: 'Une interface claire, des premiers pas guidés',
+                          title:
+                              'Une interface claire, des premiers pas guidés',
                           body:
                               'Mode sombre, badges de progression et bulles d\'aide que vous pouvez relancer à tout moment pour découvrir l\'application sans stress.',
                           screenshot: 'assets/screenshots/Dashboard.png',
@@ -863,7 +867,8 @@ class _SyncNodeVisual extends StatelessWidget {
         children: [
           Row(
             children: const [
-              Icon(Icons.phone_android_rounded, color: AppColors.cyan, size: 18),
+              Icon(Icons.phone_android_rounded,
+                  color: AppColors.cyan, size: 18),
               SizedBox(width: 8),
               Text(
                 'Téléphone',
@@ -1042,7 +1047,8 @@ class _FaqSectionState extends State<_FaqSection> {
           'Vos questions sont envoyées de façon sécurisée à nos modèles pédagogiques, ce qui demande une connexion Internet. Vos échanges ne sont jamais utilisés pour entraîner des modèles publics et vous pouvez effacer votre historique de discussion à tout instant.',
     ),
     _FaqItem(
-      question: 'Comment puis-je supprimer définitivement mon compte et mes données ?',
+      question:
+          'Comment puis-je supprimer définitivement mon compte et mes données ?',
       answer:
           'Un bouton « Supprimer définitivement mon compte » est disponible dans les Paramètres de l\'application. Il efface immédiatement vos données sur votre téléphone ainsi que toutes vos données sauvegardées en ligne.',
     ),
