@@ -7,68 +7,9 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData get darkTheme {
-    final baseTextTheme =
-        GoogleFonts.manropeTextTheme(ThemeData.dark().textTheme);
-    final frauncesTheme =
-        GoogleFonts.frauncesTextTheme(ThemeData.dark().textTheme);
-
-    final textTheme = baseTextTheme.copyWith(
-      displayLarge: frauncesTheme.displayLarge?.copyWith(
-        color: AppColors.text,
-        fontWeight: FontWeight.w700,
-        letterSpacing: -0.5,
-      ),
-      displayMedium: frauncesTheme.displayMedium?.copyWith(
-        color: AppColors.text,
-        fontWeight: FontWeight.w700,
-        letterSpacing: -0.5,
-      ),
-      displaySmall: frauncesTheme.displaySmall?.copyWith(
-        color: AppColors.text,
-        fontWeight: FontWeight.w600,
-        letterSpacing: -0.3,
-      ),
-      headlineLarge: frauncesTheme.headlineLarge?.copyWith(
-        color: AppColors.text,
-        fontWeight: FontWeight.w700,
-      ),
-      headlineMedium: frauncesTheme.headlineMedium?.copyWith(
-        color: AppColors.text,
-        fontWeight: FontWeight.w600,
-      ),
-      headlineSmall: frauncesTheme.headlineSmall?.copyWith(
-        color: AppColors.text,
-        fontWeight: FontWeight.w600,
-      ),
-      titleLarge: baseTextTheme.titleLarge?.copyWith(
-        color: AppColors.text,
-        fontWeight: FontWeight.w700,
-      ),
-      titleMedium: baseTextTheme.titleMedium?.copyWith(
-        color: AppColors.text,
-        fontWeight: FontWeight.w600,
-      ),
-      titleSmall: baseTextTheme.titleSmall?.copyWith(
-        color: AppColors.textMuted,
-        fontWeight: FontWeight.w500,
-      ),
-      bodyLarge: baseTextTheme.bodyLarge?.copyWith(
-        color: AppColors.text,
-        height: 1.6,
-      ),
-      bodyMedium: baseTextTheme.bodyMedium?.copyWith(
-        color: AppColors.textMuted,
-        height: 1.5,
-      ),
-      bodySmall: baseTextTheme.bodySmall?.copyWith(
-        color: AppColors.textMuted,
-        height: 1.4,
-      ),
-      labelLarge: baseTextTheme.labelLarge?.copyWith(
-        color: AppColors.text,
-        fontWeight: FontWeight.w600,
-      ),
-    );
+    // Évite le conflit TextTheme entre material_ui et flutter
+    // en construisant chaque style directement.
+    final base = ThemeData.dark();
 
     return ThemeData(
       useMaterial3: true,
@@ -84,7 +25,76 @@ class AppTheme {
         error: AppColors.error,
         onError: Colors.white,
       ),
-      textTheme: textTheme,
+      textTheme: base.textTheme.copyWith(
+        displayLarge: GoogleFonts.fraunces(
+          color: AppColors.text,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.5,
+          fontSize: base.textTheme.displayLarge?.fontSize,
+        ),
+        displayMedium: GoogleFonts.fraunces(
+          color: AppColors.text,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.5,
+          fontSize: base.textTheme.displayMedium?.fontSize,
+        ),
+        displaySmall: GoogleFonts.fraunces(
+          color: AppColors.text,
+          fontWeight: FontWeight.w600,
+          letterSpacing: -0.3,
+          fontSize: base.textTheme.displaySmall?.fontSize,
+        ),
+        headlineLarge: GoogleFonts.fraunces(
+          color: AppColors.text,
+          fontWeight: FontWeight.w700,
+          fontSize: base.textTheme.headlineLarge?.fontSize,
+        ),
+        headlineMedium: GoogleFonts.fraunces(
+          color: AppColors.text,
+          fontWeight: FontWeight.w600,
+          fontSize: base.textTheme.headlineMedium?.fontSize,
+        ),
+        headlineSmall: GoogleFonts.fraunces(
+          color: AppColors.text,
+          fontWeight: FontWeight.w600,
+          fontSize: base.textTheme.headlineSmall?.fontSize,
+        ),
+        titleLarge: GoogleFonts.manrope(
+          color: AppColors.text,
+          fontWeight: FontWeight.w700,
+          fontSize: base.textTheme.titleLarge?.fontSize,
+        ),
+        titleMedium: GoogleFonts.manrope(
+          color: AppColors.text,
+          fontWeight: FontWeight.w600,
+          fontSize: base.textTheme.titleMedium?.fontSize,
+        ),
+        titleSmall: GoogleFonts.manrope(
+          color: AppColors.textMuted,
+          fontWeight: FontWeight.w500,
+          fontSize: base.textTheme.titleSmall?.fontSize,
+        ),
+        bodyLarge: GoogleFonts.manrope(
+          color: AppColors.text,
+          height: 1.6,
+          fontSize: base.textTheme.bodyLarge?.fontSize,
+        ),
+        bodyMedium: GoogleFonts.manrope(
+          color: AppColors.textMuted,
+          height: 1.5,
+          fontSize: base.textTheme.bodyMedium?.fontSize,
+        ),
+        bodySmall: GoogleFonts.manrope(
+          color: AppColors.textMuted,
+          height: 1.4,
+          fontSize: base.textTheme.bodySmall?.fontSize,
+        ),
+        labelLarge: GoogleFonts.manrope(
+          color: AppColors.text,
+          fontWeight: FontWeight.w600,
+          fontSize: base.textTheme.labelLarge?.fontSize,
+        ),
+      ),
       cardTheme: CardThemeData(
         color: AppColors.card,
         elevation: 0,
