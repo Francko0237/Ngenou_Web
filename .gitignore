@@ -47,3 +47,5 @@ app.*.map.json
 *.apk
 web/Ngenou.apk
 build/web/Ngenou.apk
+.vercel
+.env*
