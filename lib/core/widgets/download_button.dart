@@ -29,6 +29,133 @@ class _DownloadButtonState extends ConsumerState<DownloadButton> {
 
   Future<void> _launchDownload(
       BuildContext context, AppRelease? release) async {
+    // 1. Fenêtre de confirmation intégrée à l'application
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: const Color(0xFF0D172A),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Color(0xFF1E2E4A), width: 1),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.cyan.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(
+                Icons.download_rounded,
+                color: AppColors.cyan,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Télécharger Ngenou',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Voulez-vous lancer le téléchargement de l\'application Ngenou pour Android ?',
+              style: TextStyle(
+                color: Color(0xFFBAC7DF),
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF070E20),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFF1E2E4A)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.android_rounded,
+                    color: AppColors.gold,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          release != null
+                              ? 'Ngenou v${release.versionName}'
+                              : 'Ngenou v1.1.1',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        const Text(
+                          'Fichier APK officiel • 100% sécurisé',
+                          style: TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text(
+              'Annuler',
+              style: TextStyle(
+                color: AppColors.textMuted,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFAF7F2),
+              foregroundColor: const Color(0xFF0B1124),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(999),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            ),
+            child: const Text(
+              'Télécharger',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    // 2. Déclenchement du téléchargement en arrière-plan sans quitter la page
     final apkUrl = release?.apkUrl?.isNotEmpty == true
         ? release!.apkUrl!
         : defaultApkUrl;
@@ -37,21 +164,41 @@ class _DownloadButtonState extends ConsumerState<DownloadButton> {
     try {
       final launched = await launchUrl(
         uri,
-        mode: LaunchMode.externalApplication,
+        mode: LaunchMode.platformDefault,
+        webOnlyWindowName: '_self',
       );
-      if (!launched && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Impossible d\'ouvrir le lien : $apkUrl'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+
+      if (context.mounted) {
+        if (launched) {
+          widget.onDownloaded?.call();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.check_circle_rounded,
+                      color: Colors.greenAccent, size: 20),
+                  SizedBox(width: 10),
+                  Text('Téléchargement lancé avec succès !'),
+                ],
+              ),
+              backgroundColor: Color(0xFF0D172A),
+              duration: Duration(seconds: 4),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Impossible de démarrer le téléchargement.'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
       }
-    } catch (e) {
+    } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur de téléchargement : $e'),
+          const SnackBar(
+            content: Text('Erreur lors du téléchargement.'),
             backgroundColor: AppColors.error,
           ),
         );
