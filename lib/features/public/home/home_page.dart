@@ -1,7 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../core/localization/app_strings.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/download_button.dart';
 import '../../../core/widgets/gradient_text.dart';
@@ -11,15 +13,15 @@ import '../../../core/widgets/responsive_layout.dart';
 import '../../../core/widgets/site_footer.dart';
 import '../../../core/widgets/site_navbar.dart';
 
-/// Page d'accueil vitrine de Ngenou — Refonte UI/UX premium
-class HomePage extends StatefulWidget {
+/// Page d'accueil vitrine de Ngenou — Refonte UI/UX premium avec internationalisation
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _showcaseKey = GlobalKey();
   final GlobalKey _featuresKey = GlobalKey();
@@ -76,6 +78,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final disableAnimations = MediaQuery.disableAnimationsOf(context);
+    final strings = ref.watch(appStringsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -86,6 +89,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             RepaintBoundary(
               child: _HeroSection(
+                strings: strings,
                 onExplorePressed: () => _scrollToSection('showcase'),
                 disableAnimations: disableAnimations,
               ),
@@ -93,20 +97,29 @@ class _HomePageState extends State<HomePage> {
             RepaintBoundary(
               child: _ShowcaseSection(
                 key: _showcaseKey,
+                strings: strings,
                 disableAnimations: disableAnimations,
               ),
             ),
             RepaintBoundary(
               child: _BentoFeaturesSection(
                 key: _featuresKey,
+                strings: strings,
                 disableAnimations: disableAnimations,
               ),
             ),
             RepaintBoundary(
-              child: _DownloadCtaSection(disableAnimations: disableAnimations),
+              child: _DownloadCtaSection(
+                strings: strings,
+                disableAnimations: disableAnimations,
+              ),
             ),
             RepaintBoundary(
-              child: _FaqSection(key: _faqKey, disableAnimations: disableAnimations),
+              child: _FaqSection(
+                key: _faqKey,
+                strings: strings,
+                disableAnimations: disableAnimations,
+              ),
             ),
             const RepaintBoundary(child: SiteFooter()),
           ],
@@ -120,10 +133,12 @@ class _HomePageState extends State<HomePage> {
 // HERO SECTION — Immersive & Cinématique
 // =============================================================================
 class _HeroSection extends StatefulWidget {
+  final AppStrings strings;
   final VoidCallback onExplorePressed;
   final bool disableAnimations;
 
   const _HeroSection({
+    required this.strings,
     required this.onExplorePressed,
     required this.disableAnimations,
   });
@@ -168,7 +183,7 @@ class _HeroSectionState extends State<_HeroSection>
       builder: (context, child) {
         return Stack(
           children: [
-            // ── Fond avec halos lumineux ambiants animés ──────────────────
+            // Fond avec halos lumineux ambiants animés
             Positioned.fill(
               child: IgnorePointer(
                 child: RepaintBoundary(
@@ -182,8 +197,6 @@ class _HeroSectionState extends State<_HeroSection>
                 ),
               ),
             ),
-
-            // ── Contenu principal isolé ───────────────────────────────────
             child!,
           ],
         );
@@ -191,30 +204,30 @@ class _HeroSectionState extends State<_HeroSection>
       child: RepaintBoundary(
         child: Container(
           constraints: BoxConstraints(minHeight: isMobile ? 0 : 680),
-        child: ResponsiveContainer(
-          padding: EdgeInsets.symmetric(
-            horizontal: Responsive.horizontalPadding(context),
-            vertical: isMobile ? 40 : 72,
+          child: ResponsiveContainer(
+            padding: EdgeInsets.symmetric(
+              horizontal: Responsive.horizontalPadding(context),
+              vertical: isMobile ? 40 : 72,
+            ),
+            child: isDesktop
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(flex: 6, child: _buildCopy(context)),
+                      const SizedBox(width: 56),
+                      Expanded(flex: 5, child: _buildVisual(context)),
+                    ],
+                  )
+                : Column(
+                    children: [
+                      _buildCopy(context),
+                      const SizedBox(height: 56),
+                      _buildVisual(context),
+                    ],
+                  ),
           ),
-          child: isDesktop
-              ? Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(flex: 6, child: _buildCopy(context)),
-                    const SizedBox(width: 56),
-                    Expanded(flex: 5, child: _buildVisual(context)),
-                  ],
-                )
-              : Column(
-                  children: [
-                    _buildCopy(context),
-                    const SizedBox(height: 56),
-                    _buildVisual(context),
-                  ],
-                ),
         ),
       ),
-    ),
     );
   }
 
@@ -224,41 +237,40 @@ class _HeroSectionState extends State<_HeroSection>
     final badgeWidget = widget.disableAnimations
         ? _buildBadge()
         : _buildBadge()
-              .animate()
-              .fadeIn(duration: 400.ms, delay: 100.ms)
-              .slideY(begin: -0.2, end: 0, duration: 400.ms);
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 100.ms)
+            .slideY(begin: -0.2, end: 0, duration: 400.ms);
 
     final titleWidget = widget.disableAnimations
         ? _buildTitle(isMobile)
         : _buildTitle(isMobile)
-              .animate()
-              .fadeIn(duration: 600.ms, delay: 250.ms, curve: Curves.easeOut)
-              .slideY(begin: 0.08, end: 0, duration: 600.ms, delay: 250.ms);
+            .animate()
+            .fadeIn(duration: 600.ms, delay: 250.ms, curve: Curves.easeOut)
+            .slideY(begin: 0.08, end: 0, duration: 600.ms, delay: 250.ms);
 
     final descWidget = widget.disableAnimations
         ? _buildDesc(isMobile)
         : _buildDesc(isMobile)
-              .animate()
-              .fadeIn(duration: 500.ms, delay: 450.ms)
-              .slideY(begin: 0.06, end: 0, duration: 500.ms, delay: 450.ms);
+            .animate()
+            .fadeIn(duration: 500.ms, delay: 450.ms)
+            .slideY(begin: 0.06, end: 0, duration: 500.ms, delay: 450.ms);
 
     final ctaWidget = widget.disableAnimations
         ? _buildCta(isMobile)
         : _buildCta(isMobile)
-              .animate()
-              .fadeIn(duration: 500.ms, delay: 600.ms)
-              .slideY(begin: 0.06, end: 0, duration: 500.ms, delay: 600.ms);
+            .animate()
+            .fadeIn(duration: 500.ms, delay: 600.ms)
+            .slideY(begin: 0.06, end: 0, duration: 500.ms, delay: 600.ms);
 
     final specsWidget = widget.disableAnimations
         ? _buildSpecs(isMobile)
-        : _buildSpecs(
-            isMobile,
-          ).animate().fadeIn(duration: 500.ms, delay: 750.ms);
+        : _buildSpecs(isMobile)
+            .animate()
+            .fadeIn(duration: 500.ms, delay: 750.ms);
 
     return Column(
-      crossAxisAlignment: isMobile
-          ? CrossAxisAlignment.center
-          : CrossAxisAlignment.start,
+      crossAxisAlignment:
+          isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
         badgeWidget,
         const SizedBox(height: 20),
@@ -297,7 +309,7 @@ class _HeroSectionState extends State<_HeroSection>
           ),
           const SizedBox(width: 8),
           Text(
-            'Tuteur IA disponible maintenant',
+            widget.strings.heroBadge,
             style: GoogleFonts.manrope(
               fontSize: 12.5,
               fontWeight: FontWeight.w600,
@@ -322,12 +334,12 @@ class _HeroSectionState extends State<_HeroSection>
           letterSpacing: -1.2,
         ),
         children: [
-          const TextSpan(text: 'L\'apprentissage\nintelligent dont '),
+          TextSpan(text: widget.strings.heroTitlePart1),
           WidgetSpan(
             alignment: PlaceholderAlignment.baseline,
             baseline: TextBaseline.alphabetic,
             child: GradientText(
-              'vous êtes le maître',
+              widget.strings.heroTitleGradient,
               style: TextStyle(
                 fontSize: isMobile ? 36 : 56,
                 fontWeight: FontWeight.w800,
@@ -336,7 +348,7 @@ class _HeroSectionState extends State<_HeroSection>
               ),
             ),
           ),
-          const TextSpan(text: '.'),
+          TextSpan(text: widget.strings.heroTitlePart2),
         ],
       ),
     );
@@ -344,7 +356,7 @@ class _HeroSectionState extends State<_HeroSection>
 
   Widget _buildDesc(bool isMobile) {
     return Text(
-      'Ngenou est un tuteur IA qui vous pose les bonnes questions au lieu de tout résoudre à votre place. Vos cours, votre planning et vos tâches restent accessibles sans connexion.',
+      widget.strings.heroDesc,
       textAlign: isMobile ? TextAlign.center : TextAlign.start,
       style: GoogleFonts.manrope(
         fontSize: isMobile ? 15 : 17,
@@ -362,7 +374,10 @@ class _HeroSectionState extends State<_HeroSection>
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         const DownloadButton(),
-        _ExploreButton(onPressed: widget.onExplorePressed),
+        _ExploreButton(
+          label: widget.strings.heroExploreButton,
+          onPressed: widget.onExplorePressed,
+        ),
       ],
     );
   }
@@ -372,20 +387,20 @@ class _HeroSectionState extends State<_HeroSection>
       spacing: 24,
       runSpacing: 14,
       alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
-      children: const [
+      children: [
         _HeroSpec(
           icon: Icons.wifi_off_rounded,
-          text: 'Cours et planning hors-ligne',
+          text: widget.strings.heroSpecOffline,
           color: AppColors.cyan,
         ),
         _HeroSpec(
           icon: Icons.school_outlined,
-          text: 'Du primaire au supérieur',
+          text: widget.strings.heroSpecLevels,
           color: AppColors.gold,
         ),
         _HeroSpec(
           icon: Icons.shield_outlined,
-          text: 'Données sauvegardées en sécurité',
+          text: widget.strings.heroSpecSecurity,
           color: AppColors.success,
         ),
       ],
@@ -422,44 +437,40 @@ class _AmbientGlowPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Halo or — coin supérieur droit
     final paintGold = Paint()
-      ..shader =
-          RadialGradient(
-            colors: [
-              AppColors.gold.withValues(alpha: 0.14 + progress * 0.07),
-              AppColors.gold.withValues(alpha: 0.04),
-              Colors.transparent,
-            ],
-            stops: const [0.0, 0.4, 1.0],
-          ).createShader(
-            Rect.fromCircle(
-              center: Offset(size.width * 0.85, -size.height * 0.1),
-              radius: size.width * 0.5,
-            ),
-          );
+      ..shader = RadialGradient(
+        colors: [
+          AppColors.gold.withValues(alpha: 0.14 + progress * 0.07),
+          AppColors.gold.withValues(alpha: 0.04),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.4, 1.0],
+      ).createShader(
+        Rect.fromCircle(
+          center: Offset(size.width * 0.85, -size.height * 0.1),
+          radius: size.width * 0.5,
+        ),
+      );
     canvas.drawCircle(
       Offset(size.width * 0.85, -size.height * 0.1),
       size.width * 0.5,
       paintGold,
     );
 
-    // Halo cyan — coin inférieur gauche
     final paintCyan = Paint()
-      ..shader =
-          RadialGradient(
-            colors: [
-              AppColors.cyan.withValues(alpha: 0.10 + (1 - progress) * 0.06),
-              AppColors.cyan.withValues(alpha: 0.03),
-              Colors.transparent,
-            ],
-            stops: const [0.0, 0.4, 1.0],
-          ).createShader(
-            Rect.fromCircle(
-              center: Offset(-size.width * 0.1, size.height * 1.1),
-              radius: size.width * 0.55,
-            ),
-          );
+      ..shader = RadialGradient(
+        colors: [
+          AppColors.cyan.withValues(alpha: 0.10 + (1 - progress) * 0.06),
+          AppColors.cyan.withValues(alpha: 0.03),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.4, 1.0],
+      ).createShader(
+        Rect.fromCircle(
+          center: Offset(-size.width * 0.1, size.height * 1.1),
+          radius: size.width * 0.55,
+        ),
+      );
     canvas.drawCircle(
       Offset(-size.width * 0.1, size.height * 1.1),
       size.width * 0.55,
@@ -473,8 +484,13 @@ class _AmbientGlowPainter extends CustomPainter {
 
 /// Bouton "Voir l'application" avec hover animé
 class _ExploreButton extends StatefulWidget {
+  final String label;
   final VoidCallback onPressed;
-  const _ExploreButton({required this.onPressed});
+
+  const _ExploreButton({
+    required this.label,
+    required this.onPressed,
+  });
 
   @override
   State<_ExploreButton> createState() => _ExploreButtonState();
@@ -509,7 +525,7 @@ class _ExploreButtonState extends State<_ExploreButton> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Voir l\'application',
+                widget.label,
                 style: GoogleFonts.manrope(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
@@ -519,7 +535,7 @@ class _ExploreButtonState extends State<_ExploreButton> {
               AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 margin: EdgeInsets.only(left: _hovering ? 10 : 8),
-                child: Icon(
+                child: const Icon(
                   Icons.arrow_forward_rounded,
                   color: AppColors.text,
                   size: 16,
@@ -571,77 +587,74 @@ class _HeroSpec extends StatelessWidget {
 // SHOWCASE SECTION — Onglets interactifs avec aperçu dynamique
 // =============================================================================
 class _ShowcaseSection extends StatefulWidget {
+  final AppStrings strings;
   final bool disableAnimations;
 
   const _ShowcaseSection({
     super.key,
+    required this.strings,
     required this.disableAnimations,
   });
 
-  static const List<_ShowcaseTab> tabs = [
-    _ShowcaseTab(
-      title: 'Tuteur IA conversationnel',
-      icon: Icons.chat_bubble_outline_rounded,
-      accent: AppColors.cyan,
-      description:
-          'Le tuteur décompose vos exercices de maths, physique et informatique et vous guide pas à pas jusqu\'à comprendre le raisonnement par vous-même.',
-      features: [
-        'Dictée vocale pour poser vos questions à l\'oral',
-        'Synthèse vocale pour écouter les explications',
-        'Quiz rapides et historique des discussions sauvegardé',
-        'Nécessite une connexion Internet',
-      ],
-      frontScreenshot: 'assets/screenshots/Ngenou2.png',
-      backScreenshot: 'assets/screenshots/Cours.png',
-      caption: 'Ngenou Assistant en dialogue interactif avec cours structuré',
-    ),
-    _ShowcaseTab(
-      title: 'Défis quotidiens et quiz',
-      icon: Icons.emoji_events_outlined,
-      accent: AppColors.gold,
-      description:
-          'Chaque jour, des QCM ciblés sur vos matières pour entretenir votre série de jours consécutifs et débloquer des trophées.',
-      features: [
-        'Série de jours pour garder le rythme',
-        'QCM interactifs avec explication immédiate',
-        'Badges et points d\'expérience (XP)',
-      ],
-      frontScreenshot: 'assets/screenshots/Defis1.png',
-      backScreenshot: 'assets/screenshots/Defis2.png',
-      caption:
-          'Défi du jour : QCM interactif avec score et correction immédiate',
-    ),
-    _ShowcaseTab(
-      title: 'Extensions Ngenou Assets',
-      icon: Icons.extension_outlined,
-      accent: AppColors.cyan,
-      description:
-          'Ngenou Assets est le catalogue d\'extensions de l\'application : installez uniquement les outils pédagogiques dont vous avez besoin, et retirez-les quand vous n\'en avez plus l\'usage.',
-      features: [
-        'Extensions légères, à installer ou désinstaller à la demande',
-        'Des outils pour le primaire, le secondaire et le supérieur',
-        'Classées par catégorie : outils de développement, sciences et maths',
-      ],
-      frontScreenshot: 'assets/screenshots/Assets1.png',
-      backScreenshot: 'assets/screenshots/Assets2.png',
-      caption: 'Catalogue d\'extensions légères installables en un clic',
-    ),
-    _ShowcaseTab(
-      title: 'Emploi du temps, alarmes et tâches',
-      icon: Icons.calendar_today_outlined,
-      accent: AppColors.gold,
-      description:
-          'Organisez vos révisions semaine par semaine, cochez vos tâches et recevez un rappel au bon moment.',
-      features: [
-        'Planning en grille de 7 jours, lisible d\'un coup d\'œil',
-        'Alarmes et notifications d\'étude à l\'heure prévue',
-        'Export et impression en PDF en un clic',
-      ],
-      frontScreenshot: 'assets/screenshots/EmploieDetemps1.png',
-      backScreenshot: 'assets/screenshots/EmploieDEtemps2.png',
-      caption: 'Emploi du temps hebdomadaire & gestion des alarmes',
-    ),
-  ];
+  static List<_ShowcaseTab> getTabs(AppStrings strings) => [
+        _ShowcaseTab(
+          title: strings.tabTutorTitle,
+          icon: Icons.chat_bubble_outline_rounded,
+          accent: AppColors.cyan,
+          description: strings.tabTutorDesc,
+          features: [
+            strings.tabTutorFeat1,
+            strings.tabTutorFeat2,
+            strings.tabTutorFeat3,
+            strings.tabTutorFeat4,
+          ],
+          frontScreenshot: 'assets/screenshots/Ngenou2.png',
+          backScreenshot: 'assets/screenshots/Cours.png',
+          caption: strings.tabTutorCaption,
+        ),
+        _ShowcaseTab(
+          title: strings.tabDefisTitle,
+          icon: Icons.emoji_events_outlined,
+          accent: AppColors.gold,
+          description: strings.tabDefisDesc,
+          features: [
+            strings.tabDefisFeat1,
+            strings.tabDefisFeat2,
+            strings.tabDefisFeat3,
+          ],
+          frontScreenshot: 'assets/screenshots/Defis1.png',
+          backScreenshot: 'assets/screenshots/Defis2.png',
+          caption: strings.tabDefisCaption,
+        ),
+        _ShowcaseTab(
+          title: strings.tabAssetsTitle,
+          icon: Icons.extension_outlined,
+          accent: AppColors.cyan,
+          description: strings.tabAssetsDesc,
+          features: [
+            strings.tabAssetsFeat1,
+            strings.tabAssetsFeat2,
+            strings.tabAssetsFeat3,
+          ],
+          frontScreenshot: 'assets/screenshots/Assets1.png',
+          backScreenshot: 'assets/screenshots/Assets2.png',
+          caption: strings.tabAssetsCaption,
+        ),
+        _ShowcaseTab(
+          title: strings.tabPlanningTitle,
+          icon: Icons.calendar_today_outlined,
+          accent: AppColors.gold,
+          description: strings.tabPlanningDesc,
+          features: [
+            strings.tabPlanningFeat1,
+            strings.tabPlanningFeat2,
+            strings.tabPlanningFeat3,
+          ],
+          frontScreenshot: 'assets/screenshots/EmploieDetemps1.png',
+          backScreenshot: 'assets/screenshots/EmploieDEtemps2.png',
+          caption: strings.tabPlanningCaption,
+        ),
+      ];
 
   @override
   State<_ShowcaseSection> createState() => _ShowcaseSectionState();
@@ -654,7 +667,8 @@ class _ShowcaseSectionState extends State<_ShowcaseSection> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = Responsive.isDesktop(context);
-    final activeTab = _ShowcaseSection.tabs[_selectedIndex];
+    final tabs = _ShowcaseSection.getTabs(widget.strings);
+    final activeTab = tabs[_selectedIndex.clamp(0, tabs.length - 1)];
 
     Widget content = Container(
       padding: const EdgeInsets.symmetric(vertical: 80),
@@ -670,16 +684,13 @@ class _ShowcaseSectionState extends State<_ShowcaseSection> {
       child: ResponsiveContainer(
         child: Column(
           children: [
-            // — En-tête de section —
             _SectionHeader(
-              title: 'Quatre outils, une seule application.',
-              subtitle:
-                  'Choisissez un module pour voir comment il se présente sur votre téléphone.',
+              title: widget.strings.showcaseTitle,
+              subtitle: widget.strings.showcaseSubtitle,
               disableAnimations: widget.disableAnimations,
             ),
             const SizedBox(height: 56),
 
-            // — Contenu —
             if (isDesktop)
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -687,8 +698,8 @@ class _ShowcaseSectionState extends State<_ShowcaseSection> {
                   Expanded(
                     flex: 6,
                     child: Column(
-                      children: List.generate(_ShowcaseSection.tabs.length, (i) {
-                        return _buildTabItem(context, _ShowcaseSection.tabs[i], i);
+                      children: List.generate(tabs.length, (i) {
+                        return _buildTabItem(context, tabs[i], i);
                       }),
                     ),
                   ),
@@ -741,8 +752,8 @@ class _ShowcaseSectionState extends State<_ShowcaseSection> {
               )
             else
               Column(
-                children: List.generate(_ShowcaseSection.tabs.length, (i) {
-                  final tab = _ShowcaseSection.tabs[i];
+                children: List.generate(tabs.length, (i) {
+                  final tab = tabs[i];
                   final isSelected = _selectedIndex == i;
                   return Column(
                     children: [
@@ -912,9 +923,14 @@ class _ShowcaseTab {
 // BENTO FEATURES SECTION
 // =============================================================================
 class _BentoFeaturesSection extends StatelessWidget {
+  final AppStrings strings;
   final bool disableAnimations;
 
-  const _BentoFeaturesSection({super.key, required this.disableAnimations});
+  const _BentoFeaturesSection({
+    super.key,
+    required this.strings,
+    required this.disableAnimations,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -926,20 +942,17 @@ class _BentoFeaturesSection extends StatelessWidget {
         child: Column(
           children: [
             _SectionHeader(
-              title: 'Pensé pour réviser partout,\nmême quand le réseau lâche.',
-              subtitle:
-                  'Vos cours et votre planning vous suivent partout. Le tuteur vous rejoint dès que vous êtes en ligne.',
+              title: strings.bentoHeaderTitle,
+              subtitle: strings.bentoHeaderSubtitle,
               disableAnimations: disableAnimations,
             ),
             const SizedBox(height: 56),
 
-            // Bento Layout
             if (isDesktop)
               IntrinsicHeight(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Colonne gauche (flex 7) : Carte large haut + 2 cartes côte-à-côte bas
                     Expanded(
                       flex: 7,
                       child: Column(
@@ -947,10 +960,9 @@ class _BentoFeaturesSection extends StatelessWidget {
                           _BentoCard(
                             icon: Icons.bolt_rounded,
                             accent: AppColors.cyan,
-                            title: 'Vos cours restent avec vous',
-                            body:
-                                'Cours, synthèses, planning et tâches sont enregistrés sur votre téléphone. Révisez dans le bus ou en coupure de réseau : seul le tuteur IA a besoin d\'une connexion.',
-                            extraWidget: const _SyncNodeVisual(),
+                            title: strings.bento1Title,
+                            body: strings.bento1Body,
+                            extraWidget: _SyncNodeVisual(strings: strings),
                             disableAnimations: disableAnimations,
                             delay: 100,
                           ),
@@ -963,10 +975,11 @@ class _BentoFeaturesSection extends StatelessWidget {
                                   child: _BentoCard(
                                     icon: Icons.shield_rounded,
                                     accent: AppColors.cyan,
-                                    title: 'Vos données restent les vôtres',
-                                    body:
-                                        'Dès que vous êtes en ligne, vos données sont sauvegardées de façon chiffrée et rattachées à votre seul compte. Vous pouvez les supprimer à tout moment.',
-                                    extraWidget: const _SecurityBadgeVisual(),
+                                    title: strings.bento2Title,
+                                    body: strings.bento2Body,
+                                    extraWidget: _SecurityBadgeVisual(
+                                      badgeText: strings.bentoSecurityBadge,
+                                    ),
                                     disableAnimations: disableAnimations,
                                     delay: 200,
                                     isFullHeight: true,
@@ -977,10 +990,9 @@ class _BentoFeaturesSection extends StatelessWidget {
                                   child: _BentoCard(
                                     icon: Icons.lightbulb_rounded,
                                     accent: AppColors.gold,
-                                    title: 'Il questionne, vous trouvez',
-                                    body:
-                                        'Le tuteur ne fait pas vos devoirs : il pose les questions qui font venir le déclic.',
-                                    quote: '« C\'est en se trompant qu\'on apprend ! »',
+                                    title: strings.bento3Title,
+                                    body: strings.bento3Body,
+                                    quote: strings.bento3Quote,
                                     disableAnimations: disableAnimations,
                                     delay: 300,
                                     isFullHeight: true,
@@ -993,17 +1005,13 @@ class _BentoFeaturesSection extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 20),
-
-                    // Colonne droite (flex 5) : Carte vitrine smartphone pleine hauteur
                     Expanded(
                       flex: 5,
                       child: _BentoCard(
                         icon: Icons.phone_android_rounded,
                         accent: AppColors.gold,
-                        title:
-                            'Une interface claire, des premiers pas guidés',
-                        body:
-                            'Mode sombre, badges de progression et bulles d\'aide que vous pouvez relancer à tout moment pour découvrir l\'application sans stress.',
+                        title: strings.bento4Title,
+                        body: strings.bento4Body,
                         screenshot: 'assets/screenshots/Dashboard.png',
                         disableAnimations: disableAnimations,
                         delay: 400,
@@ -1019,10 +1027,9 @@ class _BentoFeaturesSection extends StatelessWidget {
                   _BentoCard(
                     icon: Icons.bolt_rounded,
                     accent: AppColors.cyan,
-                    title: 'Vos cours restent avec vous',
-                    body:
-                        'Cours, synthèses, planning et tâches sont enregistrés sur votre téléphone. Révisez dans le bus ou en coupure de réseau : seul le tuteur IA a besoin d\'une connexion.',
-                    extraWidget: const _SyncNodeVisual(),
+                    title: strings.bento1Title,
+                    body: strings.bento1Body,
+                    extraWidget: _SyncNodeVisual(strings: strings),
                     disableAnimations: disableAnimations,
                     delay: 100,
                   ),
@@ -1030,10 +1037,11 @@ class _BentoFeaturesSection extends StatelessWidget {
                   _BentoCard(
                     icon: Icons.shield_rounded,
                     accent: AppColors.cyan,
-                    title: 'Vos données restent les vôtres',
-                    body:
-                        'Dès que vous êtes en ligne, vos données sont sauvegardées de façon chiffrée et rattachées à votre seul compte. Vous pouvez les supprimer à tout moment.',
-                    extraWidget: const _SecurityBadgeVisual(),
+                    title: strings.bento2Title,
+                    body: strings.bento2Body,
+                    extraWidget: _SecurityBadgeVisual(
+                      badgeText: strings.bentoSecurityBadge,
+                    ),
                     disableAnimations: disableAnimations,
                     delay: 150,
                   ),
@@ -1041,10 +1049,9 @@ class _BentoFeaturesSection extends StatelessWidget {
                   _BentoCard(
                     icon: Icons.lightbulb_rounded,
                     accent: AppColors.gold,
-                    title: 'Il questionne, vous trouvez',
-                    body:
-                        'Le tuteur ne fait pas vos devoirs : il pose les questions qui font venir le déclic.',
-                    quote: '« C\'est en se trompant qu\'on apprend ! »',
+                    title: strings.bento3Title,
+                    body: strings.bento3Body,
+                    quote: strings.bento3Quote,
                     disableAnimations: disableAnimations,
                     delay: 200,
                   ),
@@ -1052,9 +1059,8 @@ class _BentoFeaturesSection extends StatelessWidget {
                   _BentoCard(
                     icon: Icons.phone_android_rounded,
                     accent: AppColors.gold,
-                    title: 'Une interface claire, des premiers pas guidés',
-                    body:
-                        'Mode sombre, badges de progression et bulles d\'aide que vous pouvez relancer à tout moment pour découvrir l\'application sans stress.',
+                    title: strings.bento4Title,
+                    body: strings.bento4Body,
                     screenshot: 'assets/screenshots/Dashboard.png',
                     disableAnimations: disableAnimations,
                     delay: 250,
@@ -1248,7 +1254,8 @@ class _BentoCardState extends State<_BentoCard> {
 }
 
 class _SecurityBadgeVisual extends StatelessWidget {
-  const _SecurityBadgeVisual();
+  final String badgeText;
+  const _SecurityBadgeVisual({required this.badgeText});
 
   @override
   Widget build(BuildContext context) {
@@ -1263,13 +1270,13 @@ class _SecurityBadgeVisual extends StatelessWidget {
         ),
       ),
       child: Row(
-        children: const [
-          Icon(Icons.shield_outlined, color: AppColors.cyan, size: 16),
-          SizedBox(width: 8),
+        children: [
+          const Icon(Icons.shield_outlined, color: AppColors.cyan, size: 16),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Chiffrement & respect strict de vos données',
-              style: TextStyle(
+              badgeText,
+              style: const TextStyle(
                 color: AppColors.cyan,
                 fontSize: 12.5,
                 fontWeight: FontWeight.w600,
@@ -1283,7 +1290,8 @@ class _SecurityBadgeVisual extends StatelessWidget {
 }
 
 class _SyncNodeVisual extends StatefulWidget {
-  const _SyncNodeVisual();
+  final AppStrings strings;
+  const _SyncNodeVisual({required this.strings});
 
   @override
   State<_SyncNodeVisual> createState() => _SyncNodeVisualState();
@@ -1325,16 +1333,16 @@ class _SyncNodeVisualState extends State<_SyncNodeVisual>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
-            children: const [
-              Icon(
+            children: [
+              const Icon(
                 Icons.phone_android_rounded,
                 color: AppColors.cyan,
                 size: 18,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
-                'Téléphone',
-                style: TextStyle(
+                widget.strings.bentoSyncPhone,
+                style: const TextStyle(
                   color: AppColors.text,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -1378,7 +1386,7 @@ class _SyncNodeVisualState extends State<_SyncNodeVisual>
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        'sync',
+                        widget.strings.bentoSyncTag,
                         style: TextStyle(
                           color: AppColors.cyan.withValues(
                             alpha: _pulseAnimation.value,
@@ -1402,12 +1410,12 @@ class _SyncNodeVisualState extends State<_SyncNodeVisual>
             ),
           ),
           Row(
-            children: const [
-              Icon(Icons.cloud_done_rounded, color: AppColors.gold, size: 18),
-              SizedBox(width: 8),
+            children: [
+              const Icon(Icons.cloud_done_rounded, color: AppColors.gold, size: 18),
+              const SizedBox(width: 8),
               Text(
-                'Compte sécurisé',
-                style: TextStyle(
+                widget.strings.bentoSyncAccount,
+                style: const TextStyle(
                   color: AppColors.text,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -1425,9 +1433,13 @@ class _SyncNodeVisualState extends State<_SyncNodeVisual>
 // DOWNLOAD CTA SECTION — Bannière de conversion premium
 // =============================================================================
 class _DownloadCtaSection extends StatelessWidget {
+  final AppStrings strings;
   final bool disableAnimations;
 
-  const _DownloadCtaSection({required this.disableAnimations});
+  const _DownloadCtaSection({
+    required this.strings,
+    required this.disableAnimations,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1438,7 +1450,6 @@ class _DownloadCtaSection extends StatelessWidget {
       child: ResponsiveContainer(
         child: Stack(
           children: [
-            // Fond avec dégradé et halos
             Container(
               padding: EdgeInsets.symmetric(
                 horizontal: isDesktop ? 56 : 28,
@@ -1471,7 +1482,6 @@ class _DownloadCtaSection extends StatelessWidget {
               child: isDesktop
                   ? Row(
                       children: [
-                        // Halo derrière le logo
                         Stack(
                           alignment: Alignment.center,
                           children: [
@@ -1539,8 +1549,6 @@ class _DownloadCtaSection extends StatelessWidget {
                       ],
                     ),
             ),
-
-            // Halo décoratif coin supérieur droit
             Positioned(
               top: -20,
               right: -20,
@@ -1578,7 +1586,7 @@ class _DownloadCtaSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Gardez vos révisions\ndans votre poche.',
+          strings.ctaTitle,
           style: GoogleFonts.fraunces(
             fontSize: 28,
             fontWeight: FontWeight.w700,
@@ -1587,9 +1595,9 @@ class _DownloadCtaSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
-        const Text(
-          'Créez votre profil, choisissez votre niveau et lancez votre premier quiz en quelques minutes.',
-          style: TextStyle(
+        Text(
+          strings.ctaSubtitle,
+          style: const TextStyle(
             color: AppColors.textMuted,
             fontSize: 15,
             height: 1.65,
@@ -1606,9 +1614,33 @@ class _DownloadCtaSection extends StatelessWidget {
 // FAQ SECTION
 // =============================================================================
 class _FaqSection extends StatefulWidget {
+  final AppStrings strings;
   final bool disableAnimations;
 
-  const _FaqSection({super.key, required this.disableAnimations});
+  const _FaqSection({
+    super.key,
+    required this.strings,
+    required this.disableAnimations,
+  });
+
+  static List<_FaqItem> getItems(AppStrings strings) => [
+        _FaqItem(
+          question: strings.faq1Question,
+          answer: strings.faq1Answer,
+        ),
+        _FaqItem(
+          question: strings.faq2Question,
+          answer: strings.faq2Answer,
+        ),
+        _FaqItem(
+          question: strings.faq3Question,
+          answer: strings.faq3Answer,
+        ),
+        _FaqItem(
+          question: strings.faq4Question,
+          answer: strings.faq4Answer,
+        ),
+      ];
 
   @override
   State<_FaqSection> createState() => _FaqSectionState();
@@ -1617,30 +1649,6 @@ class _FaqSection extends StatefulWidget {
 class _FaqSectionState extends State<_FaqSection> {
   final Set<int> _expandedIndices = {0};
   bool _hasAppeared = false;
-
-  static const List<_FaqItem> items = [
-    _FaqItem(
-      question: 'Puis-je utiliser Ngenou sans connexion Internet ?',
-      answer:
-          'En grande partie. Vos fiches de cours, vos extensions installées, votre planning et vos tâches restent accessibles sans connexion. Seul le tuteur IA a besoin d\'Internet. Dès que vous retrouvez du réseau, vos données sont sauvegardées automatiquement.',
-    ),
-    _FaqItem(
-      question: 'Comment sont traitées mes questions posées au tuteur IA ?',
-      answer:
-          'Vos questions sont envoyées de façon sécurisée à nos modèles pédagogiques, ce qui demande une connexion Internet. Vos échanges ne sont jamais utilisés pour entraîner des modèles publics et vous pouvez effacer votre historique de discussion à tout instant.',
-    ),
-    _FaqItem(
-      question:
-          'Comment puis-je supprimer définitivement mon compte et mes données ?',
-      answer:
-          'Un bouton « Supprimer définitivement mon compte » est disponible dans les Paramètres de l\'application. Il efface immédiatement vos données sur votre téléphone ainsi que toutes vos données sauvegardées en ligne.',
-    ),
-    _FaqItem(
-      question: 'Quels niveaux scolaires sont pris en charge ?',
-      answer:
-          'Ngenou s\'adapte au niveau défini dans votre profil : primaire, secondaire (collège et lycée) et enseignement supérieur / universitaire. Le ton, les exemples et la profondeur des explications du tuteur sont automatiquement ajustés.',
-    ),
-  ];
 
   void _toggle(int index) {
     setState(() {
@@ -1661,13 +1669,15 @@ class _FaqSectionState extends State<_FaqSection> {
 
   @override
   Widget build(BuildContext context) {
+    final items = _FaqSection.getItems(widget.strings);
+
     Widget content = Container(
       padding: const EdgeInsets.symmetric(vertical: 80),
       child: ResponsiveContainer(
         child: Column(
           children: [
             _SectionHeader(
-              title: 'Questions fréquentes',
+              title: widget.strings.faqTitle,
               subtitle: null,
               disableAnimations: widget.disableAnimations,
             ),
@@ -1676,9 +1686,9 @@ class _FaqSectionState extends State<_FaqSection> {
               alignment: WrapAlignment.center,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                const Text(
-                  'Une autre question ? Écrivez-nous à ',
-                  style: TextStyle(color: AppColors.textMuted, fontSize: 15),
+                Text(
+                  widget.strings.faqContactPrefix,
+                  style: const TextStyle(color: AppColors.textMuted, fontSize: 15),
                 ),
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
@@ -1733,7 +1743,7 @@ class _FaqSectionState extends State<_FaqSection> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child: ExpansionTile(
-                          key: Key('faq_$i'),
+                          key: Key('faq_${widget.strings.language.code}_$i'),
                           initiallyExpanded: isExpanded,
                           onExpansionChanged: (_) => _toggle(i),
                           shape: const Border(),
@@ -1859,7 +1869,6 @@ class _SectionHeader extends StatelessWidget {
 
     return Column(
       children: [
-        // Petit ornement décoratif au-dessus du titre
         Container(
           width: 36,
           height: 3,
@@ -1911,15 +1920,15 @@ class _HoverCardState extends State<_HoverCard> {
             color: widget.isSelected
                 ? AppColors.cardHover
                 : _hovering
-                ? AppColors.card.withValues(alpha: 0.9)
-                : AppColors.card,
+                    ? AppColors.card.withValues(alpha: 0.9)
+                    : AppColors.card,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: widget.isSelected
                   ? widget.accentColor.withValues(alpha: 0.6)
                   : _hovering
-                  ? widget.accentColor.withValues(alpha: 0.2)
-                  : AppColors.cardBorder,
+                      ? widget.accentColor.withValues(alpha: 0.2)
+                      : AppColors.cardBorder,
               width: widget.isSelected ? 1.5 : 1,
             ),
             boxShadow: widget.isSelected

@@ -1,12 +1,14 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../localization/app_strings.dart';
 import '../theme/app_colors.dart';
 import 'responsive_layout.dart';
 
 /// Pied de page du site Ngenou
-class SiteFooter extends StatelessWidget {
+class SiteFooter extends ConsumerWidget {
   const SiteFooter({super.key});
 
   Future<void> _openEmail() async {
@@ -17,7 +19,8 @@ class SiteFooter extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final strings = ref.watch(appStringsProvider);
     final isMobile = Responsive.isMobile(context);
 
     return Container(
@@ -67,9 +70,9 @@ class SiteFooter extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 14),
-                      const Text(
-                        'L\'application d\'apprentissage intelligent qui allie tuteur IA personnalisé, extensions pédagogiques et suivi de révision.',
-                        style: TextStyle(
+                      Text(
+                        strings.footerBrandDesc,
+                        style: const TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 13,
                           height: 1.6,
@@ -85,9 +88,9 @@ class SiteFooter extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Légal & Conformité',
-                        style: TextStyle(
+                      Text(
+                        strings.footerColLegal,
+                        style: const TextStyle(
                           color: AppColors.text,
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
@@ -95,15 +98,15 @@ class SiteFooter extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       _FooterLink(
-                        title: 'Politique de Confidentialité',
+                        title: strings.footerPrivacy,
                         onTap: () => context.go('/confidentialite'),
                       ),
                       _FooterLink(
-                        title: 'Conditions d\'Utilisation (CGU)',
+                        title: strings.footerTerms,
                         onTap: () => context.go('/confidentialite'),
                       ),
                       _FooterLink(
-                        title: 'Suppression de compte',
+                        title: strings.footerAccountDeletion,
                         onTap: () => context.go('/confidentialite'),
                       ),
                     ],
@@ -116,9 +119,9 @@ class SiteFooter extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Développeur & Support',
-                        style: TextStyle(
+                      Text(
+                        strings.footerColDev,
+                        style: const TextStyle(
                           color: AppColors.text,
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
@@ -139,9 +142,9 @@ class SiteFooter extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        'Par Yamga Mokube Franck Daniel',
-                        style: TextStyle(
+                      Text(
+                        strings.footerAuthor,
+                        style: const TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 13,
                         ),
@@ -157,14 +160,14 @@ class SiteFooter extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  '© 2026 Ngenou. Tous droits réservés.',
-                  style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                Text(
+                  strings.footerCopyright,
+                  style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
                 ),
                 if (!isMobile)
-                  const Text(
-                    'Conçu pour l\'excellence académique.',
-                    style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                  Text(
+                    strings.footerTagline,
+                    style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
                   ),
               ],
             ),

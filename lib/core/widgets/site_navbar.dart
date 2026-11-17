@@ -1,13 +1,16 @@
 import 'dart:ui';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../localization/app_strings.dart';
 import '../theme/app_colors.dart';
 import 'download_button.dart';
+import 'language_switcher.dart';
 import 'responsive_layout.dart';
 
 /// Barre de navigation principale du site public Ngenou
-class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
+class SiteNavbar extends ConsumerWidget implements PreferredSizeWidget {
   final Function(String section)? onSectionSelected;
 
   const SiteNavbar({super.key, this.onSectionSelected});
@@ -33,7 +36,8 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final strings = ref.watch(appStringsProvider);
     final isMobile =
         Responsive.isMobile(context) || Responsive.isTablet(context);
 
@@ -46,7 +50,7 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // Halo or décoratif en arrière-plan (gradient radial natif fluide)
+            // Halo or décoratif en arrière-plan
             Positioned(
               top: -40,
               right: -40,
@@ -79,9 +83,9 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
                     filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                     child: Container(
                       height: 54,
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0C162E).withValues(alpha: 0.82),
+                        color: const Color(0xFF0C162E).withValues(alpha: 0.85),
                         borderRadius: BorderRadius.circular(999),
                         border: Border.all(
                           color: AppColors.cardBorder.withValues(alpha: 0.85),
@@ -130,11 +134,11 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
                                       size: 28,
                                     ),
                                   ),
-                                  const SizedBox(width: 10),
+                                  const SizedBox(width: 8),
                                   Text(
                                     'Ngenou',
                                     style: GoogleFonts.fraunces(
-                                      fontSize: 21,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.w700,
                                       color: AppColors.text,
                                       letterSpacing: -0.5,
@@ -145,9 +149,16 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
                             ),
                           ),
 
-                          // Menu Hamburger
-                          _AnimatedMenuButton(
-                            onPressed: () => _openMobileMenu(context),
+                          // Langue (tout en haut) + Menu Hamburger
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const LanguageSwitcher(isCompact: true),
+                              const SizedBox(width: 6),
+                              _AnimatedMenuButton(
+                                onPressed: () => _openMobileMenu(context, strings),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -222,28 +233,37 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
                 Row(
                   children: [
                     _NavLink(
-                      title: 'Aperçu',
+                      title: strings.navOverview,
                       onTap: () => _handleNav(context, '#showcase'),
                     ),
                     _NavLink(
-                      title: 'Fonctionnalités',
+                      title: strings.navFeatures,
                       onTap: () => _handleNav(context, '#features'),
                     ),
                     _NavLink(
-                      title: 'Nouveautés',
+                      title: strings.navWhatsNew,
                       onTap: () => _handleNav(context, '/nouveautes'),
                     ),
                     _NavLink(
-                      title: 'FAQ',
+                      title: strings.navFaq,
                       onTap: () => _handleNav(context, '#faq'),
                     ),
                     _NavLink(
-                      title: 'Confidentialité & CGU',
+                      title: strings.navPrivacy,
                       onTap: () => _handleNav(context, '/confidentialite'),
                     ),
                   ],
                 ),
-                const DownloadButton(isCompact: true),
+
+                // Sélecteur de langue tout en haut + Bouton Télécharger
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    LanguageSwitcher(),
+                    SizedBox(width: 14),
+                    DownloadButton(isCompact: true),
+                  ],
+                ),
               ],
             ),
           ),
@@ -252,12 +272,13 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  void _openMobileMenu(BuildContext context) {
+  void _openMobileMenu(BuildContext context, AppStrings strings) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (sheetContext) => _MobileMenuSheet(
+        strings: strings,
         onNavSelected: (target) {
           Navigator.pop(sheetContext);
           _handleNav(context, target);
@@ -309,9 +330,13 @@ class _AnimatedMenuButtonState extends State<_AnimatedMenuButton> {
 
 /// Sheet de menu mobile amélioré
 class _MobileMenuSheet extends StatelessWidget {
+  final AppStrings strings;
   final void Function(String) onNavSelected;
 
-  const _MobileMenuSheet({required this.onNavSelected});
+  const _MobileMenuSheet({
+    required this.strings,
+    required this.onNavSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -345,50 +370,52 @@ class _MobileMenuSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
 
-                  // Titre du menu
+                  // Titre du menu + Sélecteur de langue
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Navigation',
+                          strings.navNavigationTitle,
                           style: GoogleFonts.fraunces(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: AppColors.textMuted,
                           ),
                         ),
+                        const LanguageSwitcher(isCompact: true),
                       ],
                     ),
                   ),
 
                   _MenuTile(
                     icon: Icons.phone_iphone_rounded,
-                    title: 'Aperçu de l\'application',
+                    title: strings.navAppPreview,
                     iconColor: AppColors.cyan,
                     onTap: () => onNavSelected('#showcase'),
                   ),
                   _MenuTile(
                     icon: Icons.auto_awesome_rounded,
-                    title: 'Fonctionnalités',
+                    title: strings.navFeatures,
                     iconColor: AppColors.gold,
                     onTap: () => onNavSelected('#features'),
                   ),
                   _MenuTile(
                     icon: Icons.history_rounded,
-                    title: 'Nouveautés & Mises à jour',
+                    title: strings.navWhatsNewUpdates,
                     iconColor: AppColors.cyan,
                     onTap: () => onNavSelected('/nouveautes'),
                   ),
                   _MenuTile(
                     icon: Icons.help_outline_rounded,
-                    title: 'FAQ',
+                    title: strings.navFaq,
                     iconColor: AppColors.gold,
                     onTap: () => onNavSelected('#faq'),
                   ),
                   _MenuTile(
                     icon: Icons.policy_rounded,
-                    title: 'Confidentialité & CGU',
+                    title: strings.navPrivacy,
                     iconColor: AppColors.textMuted,
                     onTap: () => onNavSelected('/confidentialite'),
                   ),

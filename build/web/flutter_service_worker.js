@@ -36,9 +36,9 @@ const RESOURCES = {"canvaskit/chromium/canvaskit.js": "a80c765aaa8af8645c9fb1aae
 "assets/assets/screenshots/phone_frame.png": "9f7a4a9ee9f1669f970bdc67039ce975",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "33b7d9392238c04c131b6ce224e13711",
 "assets/packages/material_ui/shaders/ink_sparkle.frag": "2815c3cf1e7af2d8a2d328064a62e3a0",
-"assets/fonts/MaterialIcons-Regular.otf": "5a2eb7facb461455e65edda254ad0cb2",
-"assets/shaders/stretch_effect.frag": "40d68efbbf360632f614c731219e95f0",
+"assets/fonts/MaterialIcons-Regular.otf": "8deddd82358ab4777f3529739e8669e1",
 "assets/shaders/ink_sparkle.frag": "ecc85a2e95f5e9f53123dcaf8cb9b6ce",
+"assets/shaders/stretch_effect.frag": "40d68efbbf360632f614c731219e95f0",
 "assets/AssetManifest.bin": "2c6260bcc446eaae66e6478af629f958",
 "assets/AssetManifest.bin.json": "f0fc79a38549f6486fbc6b7aea685c39",
 "assets/FontManifest.json": "dc3d03800ccca4601324923c0b1d6d57",
@@ -51,14 +51,15 @@ const RESOURCES = {"canvaskit/chromium/canvaskit.js": "a80c765aaa8af8645c9fb1aae
 "favicon.png": "343f0e36d5f49513c3abcedd970b6b30",
 "flutter.js": "24bc71911b75b5f8135c949e27a2984e",
 "flutter.js.map": "dc4c394199e37bc66a70f7c431248458",
-"flutter_bootstrap.js": "b4252451ba478f8b9813895422f45d6e",
+"flutter_bootstrap.js": "8daf1723ca41643cf0ef76de78e7cd52",
 "index.html": "0b66fe3fd38ce0849d007b6e610fae16",
 "/": "0b66fe3fd38ce0849d007b6e610fae16",
-"main.dart.js": "1074ec9696337d83ec16882a7dd5ad4b",
+"main.dart.js": "9ef262005b5e0732f1df8296aa37f6e3",
 "manifest.json": "9691b5cad869b42e6aab35c876bc6e03",
 "robots.txt": "50b48ac48dbf85f994ea12545d5a1a61",
 "sitemap.xml": "cb39dd4cc58ee8a137cc147334a8df2f",
-"version.json": "482df74bdee37e1cedcd228cc17b6458"};
+"version.json": "482df74bdee37e1cedcd228cc17b6458",
+"vercel.json": "51e09378cce7591b49d78049497e4da9"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",

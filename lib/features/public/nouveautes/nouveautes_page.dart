@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import '../../../core/localization/app_strings.dart';
 import '../../../core/models/app_release.dart';
 import '../../../core/supabase/providers.dart';
 import '../../../core/theme/app_colors.dart';
@@ -18,6 +19,7 @@ class NouveautesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final releasesAsync = ref.watch(publishedReleasesProvider);
+    final strings = ref.watch(appStringsProvider);
     final isMobile = Responsive.isMobile(context);
 
     return Scaffold(
@@ -53,15 +55,15 @@ class NouveautesPage extends ConsumerWidget {
                           color: AppColors.cyan.withValues(alpha: 0.3),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.history_rounded,
+                          const Icon(Icons.history_rounded,
                               color: AppColors.cyan, size: 16),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
-                            'Changelog & Historique',
-                            style: TextStyle(
+                            strings.changelogBadge,
+                            style: const TextStyle(
                               color: AppColors.cyan,
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -73,7 +75,7 @@ class NouveautesPage extends ConsumerWidget {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'Toutes les nouveautés de Ngenou',
+                      strings.changelogTitle,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.fraunces(
                         fontSize: isMobile ? 32 : 44,
@@ -83,10 +85,10 @@ class NouveautesPage extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    const Text(
-                      'Découvrez au fil des mises à jour les nouvelles fonctionnalités pédagogiques et améliorations apportées à l\'application.',
+                    Text(
+                      strings.changelogSubtitle,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: AppColors.textMuted,
                         fontSize: 16,
                         height: 1.5,
@@ -118,7 +120,9 @@ class NouveautesPage extends ConsumerWidget {
                               color: AppColors.error, size: 48),
                           const SizedBox(height: 16),
                           Text(
-                            'Impossible de charger les mises à jour : $error',
+                            strings.isFr
+                                ? 'Impossible de charger les mises à jour : $error'
+                                : 'Unable to load updates: $error',
                             style: const TextStyle(color: AppColors.textMuted),
                             textAlign: TextAlign.center,
                           ),
@@ -136,17 +140,25 @@ class NouveautesPage extends ConsumerWidget {
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(color: AppColors.cardBorder),
                           ),
-                          child: const Column(
+                          child: Column(
                             children: [
-                              Icon(Icons.inbox_rounded,
+                              const Icon(Icons.inbox_rounded,
                                   color: AppColors.textMuted, size: 48),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               Text(
-                                'Aucune version publiée pour le moment.',
-                                style: TextStyle(
+                                strings.emptyReleasesTitle,
+                                style: const TextStyle(
                                   color: AppColors.text,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                strings.emptyReleasesDesc,
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 14,
                                 ),
                               ),
                             ],
@@ -162,6 +174,7 @@ class NouveautesPage extends ConsumerWidget {
                         return _ReleaseCard(
                           release: release,
                           isLatest: isLatest,
+                          strings: strings,
                         );
                       }),
                     );
@@ -181,19 +194,22 @@ class NouveautesPage extends ConsumerWidget {
 class _ReleaseCard extends StatelessWidget {
   final AppRelease release;
   final bool isLatest;
+  final AppStrings strings;
 
   const _ReleaseCard({
     required this.release,
     required this.isLatest,
+    required this.strings,
   });
 
   @override
   Widget build(BuildContext context) {
-    String dateStr = 'Récemment';
+    String dateStr = strings.isFr ? 'Récemment' : 'Recently';
     if (release.publishedAt != null) {
       try {
+        final localeStr = strings.isFr ? 'fr_FR' : 'en_US';
         dateStr =
-            DateFormat('d MMMM yyyy', 'fr_FR').format(release.publishedAt!);
+            DateFormat('d MMMM yyyy', localeStr).format(release.publishedAt!);
       } catch (_) {
         final d = release.publishedAt!;
         dateStr = '${d.day}/${d.month}/${d.year}';
@@ -268,9 +284,9 @@ class _ReleaseCard extends StatelessWidget {
                           color: AppColors.cyan.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text(
-                          'Dernière version',
-                          style: TextStyle(
+                        child: Text(
+                          strings.latestBadge,
+                          style: const TextStyle(
                             color: AppColors.cyan,
                             fontWeight: FontWeight.w700,
                             fontSize: 12,
@@ -287,9 +303,11 @@ class _ReleaseCard extends StatelessWidget {
                           color: AppColors.error.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text(
-                          'Mise à jour obligatoire',
-                          style: TextStyle(
+                        child: Text(
+                          strings.isFr
+                              ? 'Mise à jour obligatoire'
+                              : 'Mandatory Update',
+                          style: const TextStyle(
                             color: AppColors.error,
                             fontWeight: FontWeight.w700,
                             fontSize: 12,
@@ -335,7 +353,9 @@ class _ReleaseCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Fonctionnalités & Améliorations',
+                    strings.isFr
+                        ? 'Fonctionnalités & Améliorations'
+                        : 'Features & Improvements',
                     style: GoogleFonts.manrope(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -433,13 +453,15 @@ class _ReleaseCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Fichier d\'installation Android',
-                  style: TextStyle(
+                  strings.isFr
+                      ? 'Fichier d\'installation Android'
+                      : 'Android Installation File',
+                  style: const TextStyle(
                     color: AppColors.textMuted,
                     fontSize: 13,
                   ),
                 ),
-                DownloadButton(
+                const DownloadButton(
                   isCompact: true,
                 ),
               ],

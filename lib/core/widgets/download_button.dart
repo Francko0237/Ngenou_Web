@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../localization/app_strings.dart';
 import '../models/app_release.dart';
 import '../supabase/providers.dart';
 import '../theme/app_colors.dart';
@@ -28,7 +29,7 @@ class _DownloadButtonState extends ConsumerState<DownloadButton> {
       'https://github.com/Francko0237/Ngenou_Web/releases/latest/download/Ngenou.apk';
 
   Future<void> _launchDownload(
-      BuildContext context, AppRelease? release) async {
+      BuildContext context, AppRelease? release, AppStrings strings) async {
     final apkUrl = release?.apkUrl?.isNotEmpty == true
         ? release!.apkUrl!
         : defaultApkUrl;
@@ -45,23 +46,23 @@ class _DownloadButtonState extends ConsumerState<DownloadButton> {
         if (launched) {
           widget.onDownloaded?.call();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Row(
                 children: [
-                  Icon(Icons.check_circle_rounded,
+                  const Icon(Icons.check_circle_rounded,
                       color: Colors.greenAccent, size: 20),
-                  SizedBox(width: 10),
-                  Text('Téléchargement lancé avec succès !'),
+                  const SizedBox(width: 10),
+                  Text(strings.downloadStartedSuccess),
                 ],
               ),
-              backgroundColor: Color(0xFF0D172A),
-              duration: Duration(seconds: 4),
+              backgroundColor: const Color(0xFF0D172A),
+              duration: const Duration(seconds: 4),
             ),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Impossible de démarrer le téléchargement.'),
+            SnackBar(
+              content: Text(strings.downloadFailed),
               backgroundColor: AppColors.error,
             ),
           );
@@ -70,8 +71,8 @@ class _DownloadButtonState extends ConsumerState<DownloadButton> {
     } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Erreur lors du téléchargement.'),
+          SnackBar(
+            content: Text(strings.downloadError),
             backgroundColor: AppColors.error,
           ),
         );
@@ -82,6 +83,7 @@ class _DownloadButtonState extends ConsumerState<DownloadButton> {
   @override
   Widget build(BuildContext context) {
     final latestReleaseAsync = ref.watch(latestReleaseProvider);
+    final strings = ref.watch(appStringsProvider);
     final release = latestReleaseAsync.value;
 
     if (widget.isCompact) {
@@ -93,11 +95,11 @@ class _DownloadButtonState extends ConsumerState<DownloadButton> {
           duration: const Duration(milliseconds: 180),
           curve: Curves.easeOutCubic,
           child: ElevatedButton.icon(
-            onPressed: () => _launchDownload(context, release),
+            onPressed: () => _launchDownload(context, release, strings),
             icon: const Icon(Icons.download_rounded, size: 18),
-            label: const Text(
-              'Télécharger',
-              style: TextStyle(fontWeight: FontWeight.w700),
+            label: Text(
+              strings.download,
+              style: const TextStyle(fontWeight: FontWeight.w700),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFFAF7F2),
@@ -114,13 +116,13 @@ class _DownloadButtonState extends ConsumerState<DownloadButton> {
       );
     }
 
-    String releaseMeta = 'Version Android';
+    String releaseMeta = strings.isFr ? 'Version Android' : 'Android Version';
     if (release != null) {
-      String dateStr = 'Dernière version';
+      String dateStr = strings.latestBadge;
       if (release.publishedAt != null) {
         try {
-          dateStr =
-              DateFormat('d MMMM yyyy', 'fr_FR').format(release.publishedAt!);
+          final localeStr = strings.isFr ? 'fr_FR' : 'en_US';
+          dateStr = DateFormat('d MMMM yyyy', localeStr).format(release.publishedAt!);
         } catch (_) {
           final d = release.publishedAt!;
           dateStr = '${d.day}/${d.month}/${d.year}';
@@ -138,7 +140,7 @@ class _DownloadButtonState extends ConsumerState<DownloadButton> {
           onExit: (_) => setState(() => _isHovered = false),
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
-            onTap: () => _launchDownload(context, release),
+            onTap: () => _launchDownload(context, release, strings),
             child: AnimatedScale(
               scale: _isHovered ? 1.025 : 1.0,
               duration: const Duration(milliseconds: 200),
@@ -193,20 +195,20 @@ class _DownloadButtonState extends ConsumerState<DownloadButton> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
+                      children: [
                         Text(
-                          'Application mobile',
-                          style: TextStyle(
+                          strings.isFr ? 'Application mobile' : 'Mobile Application',
+                          style: const TextStyle(
                             fontSize: 11.5,
                             color: Color(0xFF55607C),
                             fontWeight: FontWeight.w600,
                             letterSpacing: 0.3,
                           ),
                         ),
-                        SizedBox(height: 1),
+                        const SizedBox(height: 1),
                         Text(
-                          'Télécharger Ngenou',
-                          style: TextStyle(
+                          strings.isFr ? 'Télécharger Ngenou' : 'Download Ngenou',
+                          style: const TextStyle(
                             fontSize: 17.5,
                             color: Color(0xFF0B1124),
                             fontWeight: FontWeight.w800,
