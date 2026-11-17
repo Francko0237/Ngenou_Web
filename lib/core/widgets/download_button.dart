@@ -24,10 +24,14 @@ class DownloadButton extends ConsumerStatefulWidget {
 class _DownloadButtonState extends ConsumerState<DownloadButton> {
   bool _isHovered = false;
 
+  static const String defaultApkUrl =
+      'https://github.com/Francko0237/Ngenou_Web/releases/latest/download/Ngenou.apk';
+
   Future<void> _launchDownload(
       BuildContext context, AppRelease? release) async {
-    final apkUrl =
-        release?.apkUrl?.isNotEmpty == true ? release!.apkUrl! : 'Ngenou.apk';
+    final apkUrl = release?.apkUrl?.isNotEmpty == true
+        ? release!.apkUrl!
+        : defaultApkUrl;
 
     final uri = Uri.parse(apkUrl);
     try {
