@@ -249,15 +249,16 @@ class ReleaseRepository {
     return [
       AppRelease(
         id: 'fallback-1',
-        versionName: '1.1.0',
-        versionCode: 11,
+        versionName: '1.1.1',
+        versionCode: 12,
         title: 'Lancement officiel de Ngenou avec Ngenou Assets & Mode Hors-Ligne',
         notes:
             'Cette version apporte le catalogue d\'extensions Ngenou Assets, les défis d\'apprentissage avec série de jours et le tuteur IA avec entrée vocale.',
-        apkUrl: 'Ngenou.apk',
+        apkUrl:
+            'https://github.com/Francko0237/Ngenou_Web/releases/latest/download/Ngenou.apk',
         forceUpdate: false,
         isPublished: true,
-        publishedAt: DateTime(2026, 10, 28),
+        publishedAt: DateTime(2026, 11, 17),
         features: [
           const ReleaseFeature(
             id: 'feat-1',
