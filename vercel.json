@@ -2,7 +2,23 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/nouveautes",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/confidentialite",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/((?!assets|canvaskit|icons|flutter\\.js|flutter_bootstrap\\.js|flutter_service_worker\\.js|main\\.dart\\.js|favicon\\.png|manifest\\.json|robots\\.txt|sitemap\\.xml|version\\.json).*)",
       "destination": "/index.html"
     }
   ],
