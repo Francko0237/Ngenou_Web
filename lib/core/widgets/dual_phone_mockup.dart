@@ -305,104 +305,114 @@ class _RealisticPhone extends StatelessWidget {
     final bottomInset = height * (22.0 / 1115.0);
     final screenRadius = width * 0.088;
 
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(screenRadius),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isElevated ? 0.72 : 0.52),
-            blurRadius: isElevated ? 42 : 28,
-            spreadRadius: isElevated ? -3 : -6,
-            offset: Offset(isElevated ? 12 : 8, isElevated ? 22 : 14),
-          ),
-          if (isElevated)
+    return RepaintBoundary(
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(screenRadius),
+          boxShadow: [
             BoxShadow(
-              color: AppColors.cyan.withValues(alpha: 0.16),
-              blurRadius: 40,
-              spreadRadius: -8,
-              offset: const Offset(4, 16),
+              color: Colors.black.withValues(alpha: isElevated ? 0.72 : 0.52),
+              blurRadius: isElevated ? 42 : 28,
+              spreadRadius: isElevated ? -3 : -6,
+              offset: Offset(isElevated ? 12 : 8, isElevated ? 22 : 14),
             ),
-        ],
-      ),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          // ── A. Fond d'écran sombre ──────────────────────────────────────
-          Padding(
-            padding:
-                EdgeInsets.fromLTRB(leftInset, topInset, rightInset, bottomInset),
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF0A101D),
-                borderRadius: BorderRadius.circular(screenRadius - 2),
+            if (isElevated)
+              BoxShadow(
+                color: AppColors.cyan.withValues(alpha: 0.16),
+                blurRadius: 40,
+                spreadRadius: -8,
+                offset: const Offset(4, 16),
+              ),
+          ],
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // ── A. Fond d'écran sombre ──────────────────────────────────────
+            Padding(
+              padding:
+                  EdgeInsets.fromLTRB(leftInset, topInset, rightInset, bottomInset),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0A101D),
+                  borderRadius: BorderRadius.circular(screenRadius - 2),
+                ),
               ),
             ),
-          ),
 
-          // ── B. Image d'écran de l'application ───────────────────────────
-          Positioned(
-            left: leftInset,
-            top: topInset,
-            right: rightInset,
-            bottom: bottomInset,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(screenRadius - 2),
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, _) => Container(
-                  color: const Color(0xFF0D172A),
-                  child: const Center(
-                    child: Icon(
-                      Icons.image_not_supported_rounded,
-                      color: Color(0xFF384E75),
-                      size: 28,
+            // ── B. Image d'écran de l'application ───────────────────────────
+            Positioned(
+              left: leftInset,
+              top: topInset,
+              right: rightInset,
+              bottom: bottomInset,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(screenRadius - 2),
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.medium,
+                  gaplessPlayback: true,
+                  cacheWidth: (width * 2.2).toInt(),
+                  cacheHeight: (height * 2.2).toInt(),
+                  errorBuilder: (context, error, _) => Container(
+                    color: const Color(0xFF0D172A),
+                    child: const Center(
+                      child: Icon(
+                        Icons.image_not_supported_rounded,
+                        color: Color(0xFF384E75),
+                        size: 28,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
 
-          // ── C. Reflet de verre supérieur ────────────────────────────────
-          Positioned(
-            left: leftInset,
-            top: topInset,
-            right: rightInset,
-            height: height * 0.42,
-            child: ClipRRect(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(screenRadius - 2),
-                topRight: Radius.circular(screenRadius - 2),
-              ),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Colors.white.withValues(alpha: 0.13),
-                      Colors.white.withValues(alpha: 0.03),
-                      Colors.transparent,
-                    ],
-                    stops: const [0.0, 0.35, 0.75],
+            // ── C. Reflet de verre supérieur ────────────────────────────────
+            Positioned(
+              left: leftInset,
+              top: topInset,
+              right: rightInset,
+              height: height * 0.42,
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(screenRadius - 2),
+                  topRight: Radius.circular(screenRadius - 2),
+                ),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.white.withValues(alpha: 0.13),
+                        Colors.white.withValues(alpha: 0.03),
+                        Colors.transparent,
+                      ],
+                      stops: const [0.0, 0.35, 0.75],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
 
-          // ── D. Cadre matériel réaliste ──────────────────────────────────
-          IgnorePointer(
-            child: Image.asset(
-              'assets/screenshots/phone_frame.png',
-              fit: BoxFit.fill,
-              errorBuilder: (context, error, _) => _fallbackFrame(screenRadius),
+            // ── D. Cadre matériel réaliste ──────────────────────────────────
+            IgnorePointer(
+              child: Image.asset(
+                'assets/screenshots/phone_frame.png',
+                fit: BoxFit.fill,
+                filterQuality: FilterQuality.medium,
+                gaplessPlayback: true,
+                cacheWidth: (width * 2.2).toInt(),
+                cacheHeight: (height * 2.2).toInt(),
+                errorBuilder: (context, error, _) => _fallbackFrame(screenRadius),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

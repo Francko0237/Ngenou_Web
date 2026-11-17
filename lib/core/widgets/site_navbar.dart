@@ -46,26 +46,23 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // Halo or décoratif en arrière-plan
+            // Halo or décoratif en arrière-plan (gradient radial natif fluide)
             Positioned(
               top: -40,
               right: -40,
               child: IgnorePointer(
-                child: ImageFiltered(
-                  imageFilter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-                  child: Container(
-                    width: 180,
-                    height: 180,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        colors: [
-                          AppColors.gold.withValues(alpha: 0.35),
-                          AppColors.gold.withValues(alpha: 0.12),
-                          Colors.transparent,
-                        ],
-                        stops: const [0.0, 0.45, 1.0],
-                      ),
+                child: Container(
+                  width: 180,
+                  height: 180,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        AppColors.gold.withValues(alpha: 0.35),
+                        AppColors.gold.withValues(alpha: 0.12),
+                        Colors.transparent,
+                      ],
+                      stops: const [0.0, 0.45, 1.0],
                     ),
                   ),
                 ),
@@ -123,6 +120,10 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
                                     'assets/images/logo.png',
                                     width: 32,
                                     height: 32,
+                                    cacheWidth: 64,
+                                    cacheHeight: 64,
+                                    filterQuality: FilterQuality.medium,
+                                    gaplessPlayback: true,
                                     errorBuilder: (_, __, ___) => const Icon(
                                       Icons.school_rounded,
                                       color: AppColors.cyan,
@@ -192,6 +193,10 @@ class SiteNavbar extends StatelessWidget implements PreferredSizeWidget {
                           'assets/images/logo.png',
                           width: 36,
                           height: 36,
+                          cacheWidth: 72,
+                          cacheHeight: 72,
+                          filterQuality: FilterQuality.medium,
+                          gaplessPlayback: true,
                           errorBuilder: (_, __, ___) => const Icon(
                             Icons.school_rounded,
                             color: AppColors.cyan,

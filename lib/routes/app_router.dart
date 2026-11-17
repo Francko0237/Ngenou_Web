@@ -49,38 +49,59 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      // Routes publiques
+      // Routes publiques avec transitions fluides sans à-coups
       GoRoute(
         path: '/',
-        builder: (context, state) => const HomePage(),
+        pageBuilder: (context, state) => _buildFadePage(
+          key: state.pageKey,
+          child: const HomePage(),
+        ),
       ),
       GoRoute(
         path: '/nouveautes',
-        builder: (context, state) => const NouveautesPage(),
+        pageBuilder: (context, state) => _buildFadePage(
+          key: state.pageKey,
+          child: const NouveautesPage(),
+        ),
       ),
       GoRoute(
         path: '/confidentialite',
-        builder: (context, state) => const ConfidentialitePage(),
+        pageBuilder: (context, state) => _buildFadePage(
+          key: state.pageKey,
+          child: const ConfidentialitePage(),
+        ),
       ),
 
-      // Routes d'administration cachées
+      // Routes d'administration
       GoRoute(
         path: '/admin/login',
-        builder: (context, state) => const AdminLoginPage(),
+        pageBuilder: (context, state) => _buildFadePage(
+          key: state.pageKey,
+          child: const AdminLoginPage(),
+        ),
       ),
       GoRoute(
         path: '/admin',
-        builder: (context, state) => const AdminDashboardPage(),
+        pageBuilder: (context, state) => _buildFadePage(
+          key: state.pageKey,
+          child: const AdminDashboardPage(),
+        ),
       ),
       GoRoute(
         path: '/admin/releases/new',
-        builder: (context, state) => const AdminReleaseFormPage(),
+        pageBuilder: (context, state) => _buildFadePage(
+          key: state.pageKey,
+          child: const AdminReleaseFormPage(),
+        ),
       ),
       GoRoute(
         path: '/admin/releases/:id/edit',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final id = state.pathParameters['id'];
-          return AdminReleaseFormPage(releaseId: id);
+          return _buildFadePage(
+            key: state.pageKey,
+            child: AdminReleaseFormPage(releaseId: id),
+          );
         },
       ),
     ],
@@ -104,3 +125,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ),
   );
 });
+
+/// Crée une transition de page par fondu ultra-rapide (200ms) et légère en GPU
+CustomTransitionPage<void> _buildFadePage({
+  required LocalKey key,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: key,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 200),
+    reverseTransitionDuration: const Duration(milliseconds: 150),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+        ),
+        child: child,
+      );
+    },
+  );
+}

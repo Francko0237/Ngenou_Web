@@ -261,10 +261,13 @@ class _AdminReleaseFormPageState extends ConsumerState<AdminReleaseFormPage> {
                                     withData: true,
                                   );
 
-                                  if (result == null || result.files.isEmpty)
+                                  if (result == null || result.files.isEmpty) {
                                     return;
+                                  }
                                   final file = result.files.first;
-                                  if (file.bytes == null) return;
+                                  if (file.bytes == null) {
+                                    return;
+                                  }
 
                                   if (file.bytes!.lengthInBytes > 1024 * 1024) {
                                     messenger.showSnackBar(

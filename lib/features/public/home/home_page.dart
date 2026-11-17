@@ -25,7 +25,32 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey _featuresKey = GlobalKey();
   final GlobalKey _faqKey = GlobalKey();
 
-  int _selectedTabIndex = 0;
+  bool _imagesPrecached = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_imagesPrecached) {
+      _imagesPrecached = true;
+      const assetImages = [
+        'assets/screenshots/Dashboard.png',
+        'assets/screenshots/Cours.png',
+        'assets/screenshots/phone_frame.png',
+        'assets/screenshots/Ngenou2.png',
+        'assets/screenshots/Defis1.png',
+        'assets/screenshots/Defis2.png',
+        'assets/screenshots/Assets1.png',
+        'assets/screenshots/Assets2.png',
+        'assets/screenshots/EmploieDetemps1.png',
+        'assets/screenshots/EmploieDEtemps2.png',
+        'assets/images/logo.png',
+        'assets/images/logo_full.png',
+      ];
+      for (final asset in assetImages) {
+        precacheImage(AssetImage(asset), context);
+      }
+    }
+  }
 
   void _scrollToSection(String section) {
     GlobalKey? key;
@@ -59,24 +84,31 @@ class _HomePageState extends State<HomePage> {
         controller: _scrollController,
         child: Column(
           children: [
-            _HeroSection(
-              onExplorePressed: () => _scrollToSection('showcase'),
-              disableAnimations: disableAnimations,
+            RepaintBoundary(
+              child: _HeroSection(
+                onExplorePressed: () => _scrollToSection('showcase'),
+                disableAnimations: disableAnimations,
+              ),
             ),
-            _ShowcaseSection(
-              key: _showcaseKey,
-              selectedIndex: _selectedTabIndex,
-              onTabChanged: (index) =>
-                  setState(() => _selectedTabIndex = index),
-              disableAnimations: disableAnimations,
+            RepaintBoundary(
+              child: _ShowcaseSection(
+                key: _showcaseKey,
+                disableAnimations: disableAnimations,
+              ),
             ),
-            _BentoFeaturesSection(
-              key: _featuresKey,
-              disableAnimations: disableAnimations,
+            RepaintBoundary(
+              child: _BentoFeaturesSection(
+                key: _featuresKey,
+                disableAnimations: disableAnimations,
+              ),
             ),
-            _DownloadCtaSection(disableAnimations: disableAnimations),
-            _FaqSection(key: _faqKey, disableAnimations: disableAnimations),
-            const SiteFooter(),
+            RepaintBoundary(
+              child: _DownloadCtaSection(disableAnimations: disableAnimations),
+            ),
+            RepaintBoundary(
+              child: _FaqSection(key: _faqKey, disableAnimations: disableAnimations),
+            ),
+            const RepaintBoundary(child: SiteFooter()),
           ],
         ),
       ),
@@ -139,23 +171,26 @@ class _HeroSectionState extends State<_HeroSection>
             // ── Fond avec halos lumineux ambiants animés ──────────────────
             Positioned.fill(
               child: IgnorePointer(
-                child: CustomPaint(
-                  painter: _AmbientGlowPainter(
-                    progress: widget.disableAnimations
-                        ? 0.5
-                        : _ambientAnimation.value,
+                child: RepaintBoundary(
+                  child: CustomPaint(
+                    painter: _AmbientGlowPainter(
+                      progress: widget.disableAnimations
+                          ? 0.5
+                          : _ambientAnimation.value,
+                    ),
                   ),
                 ),
               ),
             ),
 
-            // ── Contenu principal ─────────────────────────────────────────
+            // ── Contenu principal isolé ───────────────────────────────────
             child!,
           ],
         );
       },
-      child: Container(
-        constraints: BoxConstraints(minHeight: isMobile ? 0 : 680),
+      child: RepaintBoundary(
+        child: Container(
+          constraints: BoxConstraints(minHeight: isMobile ? 0 : 680),
         child: ResponsiveContainer(
           padding: EdgeInsets.symmetric(
             horizontal: Responsive.horizontalPadding(context),
@@ -179,6 +214,7 @@ class _HeroSectionState extends State<_HeroSection>
                 ),
         ),
       ),
+    ),
     );
   }
 
@@ -534,15 +570,11 @@ class _HeroSpec extends StatelessWidget {
 // =============================================================================
 // SHOWCASE SECTION — Onglets interactifs avec aperçu dynamique
 // =============================================================================
-class _ShowcaseSection extends StatelessWidget {
-  final int selectedIndex;
-  final ValueChanged<int> onTabChanged;
+class _ShowcaseSection extends StatefulWidget {
   final bool disableAnimations;
 
   const _ShowcaseSection({
     super.key,
-    required this.selectedIndex,
-    required this.onTabChanged,
     required this.disableAnimations,
   });
 
@@ -612,9 +644,17 @@ class _ShowcaseSection extends StatelessWidget {
   ];
 
   @override
+  State<_ShowcaseSection> createState() => _ShowcaseSectionState();
+}
+
+class _ShowcaseSectionState extends State<_ShowcaseSection> {
+  int _selectedIndex = 0;
+  bool _hasAppeared = false;
+
+  @override
   Widget build(BuildContext context) {
     final isDesktop = Responsive.isDesktop(context);
-    final activeTab = tabs[selectedIndex];
+    final activeTab = _ShowcaseSection.tabs[_selectedIndex];
 
     Widget content = Container(
       padding: const EdgeInsets.symmetric(vertical: 80),
@@ -635,7 +675,7 @@ class _ShowcaseSection extends StatelessWidget {
               title: 'Quatre outils, une seule application.',
               subtitle:
                   'Choisissez un module pour voir comment il se présente sur votre téléphone.',
-              disableAnimations: disableAnimations,
+              disableAnimations: widget.disableAnimations,
             ),
             const SizedBox(height: 56),
 
@@ -647,8 +687,8 @@ class _ShowcaseSection extends StatelessWidget {
                   Expanded(
                     flex: 6,
                     child: Column(
-                      children: List.generate(tabs.length, (i) {
-                        return _buildTabItem(context, tabs[i], i);
+                      children: List.generate(_ShowcaseSection.tabs.length, (i) {
+                        return _buildTabItem(context, _ShowcaseSection.tabs[i], i);
                       }),
                     ),
                   ),
@@ -681,7 +721,7 @@ class _ShowcaseSection extends StatelessWidget {
                               backImagePath: activeTab.backScreenshot,
                               width: 390,
                               glowColor: activeTab.accent,
-                              disableAnimations: disableAnimations,
+                              disableAnimations: widget.disableAnimations,
                             ),
                             const SizedBox(height: 20),
                             Text(
@@ -701,9 +741,9 @@ class _ShowcaseSection extends StatelessWidget {
               )
             else
               Column(
-                children: List.generate(tabs.length, (i) {
-                  final tab = tabs[i];
-                  final isSelected = selectedIndex == i;
+                children: List.generate(_ShowcaseSection.tabs.length, (i) {
+                  final tab = _ShowcaseSection.tabs[i];
+                  final isSelected = _selectedIndex == i;
                   return Column(
                     children: [
                       _buildTabItem(context, tab, i),
@@ -718,7 +758,7 @@ class _ShowcaseSection extends StatelessWidget {
                                 backImagePath: tab.backScreenshot,
                                 width: 300,
                                 glowColor: tab.accent,
-                                disableAnimations: disableAnimations,
+                                disableAnimations: widget.disableAnimations,
                               ),
                               const SizedBox(height: 14),
                               Text(
@@ -743,21 +783,22 @@ class _ShowcaseSection extends StatelessWidget {
       ),
     );
 
-    if (disableAnimations) return content;
+    if (widget.disableAnimations || _hasAppeared) return content;
+    _hasAppeared = true;
 
     return content
-        .animate(onPlay: (c) => c.forward())
+        .animate()
         .fadeIn(duration: 600.ms, curve: Curves.easeOut)
         .slideY(begin: 0.04, end: 0, duration: 600.ms);
   }
 
   Widget _buildTabItem(BuildContext context, _ShowcaseTab tab, int index) {
-    final isSelected = selectedIndex == index;
+    final isSelected = _selectedIndex == index;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: _HoverCard(
-        onTap: () => onTabChanged(index),
+        onTap: () => setState(() => _selectedIndex = index),
         isSelected: isSelected,
         accentColor: tab.accent,
         child: Column(
@@ -1060,6 +1101,7 @@ class _BentoCard extends StatefulWidget {
 
 class _BentoCardState extends State<_BentoCard> {
   bool _hovering = false;
+  bool _hasAppeared = false;
 
   @override
   Widget build(BuildContext context) {
@@ -1186,7 +1228,8 @@ class _BentoCardState extends State<_BentoCard> {
       ),
     );
 
-    if (widget.disableAnimations) return card;
+    if (widget.disableAnimations || _hasAppeared) return card;
+    _hasAppeared = true;
 
     return card
         .animate()
@@ -1449,6 +1492,10 @@ class _DownloadCtaSection extends StatelessWidget {
                               'assets/images/logo_full.png',
                               width: 200,
                               height: 200,
+                              cacheWidth: 400,
+                              cacheHeight: 400,
+                              filterQuality: FilterQuality.medium,
+                              gaplessPlayback: true,
                               fit: BoxFit.contain,
                             ),
                           ],
@@ -1479,6 +1526,10 @@ class _DownloadCtaSection extends StatelessWidget {
                               'assets/images/logo_full.png',
                               width: 170,
                               height: 170,
+                              cacheWidth: 340,
+                              cacheHeight: 340,
+                              filterQuality: FilterQuality.medium,
+                              gaplessPlayback: true,
                               fit: BoxFit.contain,
                             ),
                           ],
@@ -1565,6 +1616,7 @@ class _FaqSection extends StatefulWidget {
 
 class _FaqSectionState extends State<_FaqSection> {
   final Set<int> _expandedIndices = {0};
+  bool _hasAppeared = false;
 
   static const List<_FaqItem> items = [
     _FaqItem(
@@ -1727,7 +1779,8 @@ class _FaqSectionState extends State<_FaqSection> {
       ),
     );
 
-    if (widget.disableAnimations) return content;
+    if (widget.disableAnimations || _hasAppeared) return content;
+    _hasAppeared = true;
 
     return content
         .animate()
