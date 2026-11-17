@@ -4,8 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../localization/app_language.dart';
 import '../theme/app_colors.dart';
 
-/// Sélecteur de langue élégant pour la barre de navigation
-class LanguageSwitcher extends ConsumerWidget {
+/// Sélecteur de langue segmented control avec glissement fluide et géométrie uniforme
+class LanguageSwitcher extends ConsumerStatefulWidget {
   final bool isCompact;
 
   const LanguageSwitcher({
@@ -14,131 +14,142 @@ class LanguageSwitcher extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LanguageSwitcher> createState() => _LanguageSwitcherState();
+}
+
+class _LanguageSwitcherState extends ConsumerState<LanguageSwitcher> {
+  int? _hoveredIndex;
+
+  @override
+  Widget build(BuildContext context) {
     final currentLang = ref.watch(appLanguageProvider);
     final notifier = ref.read(appLanguageProvider.notifier);
+    final isFr = currentLang == AppLanguage.fr;
+
+    // Dimensions parfaitement calculées pour une symétrie et une uniformité totales
+    final double slotWidth = widget.isCompact ? 38.0 : 44.0;
+    final double slotHeight = widget.isCompact ? 26.0 : 30.0;
+    const double padding = 3.0;
+
+    final double totalWidth = (slotWidth * 2) + (padding * 2);
+    final double totalHeight = slotHeight + (padding * 2);
 
     return Container(
-      height: isCompact ? 34 : 38,
-      padding: const EdgeInsets.all(3),
+      width: totalWidth,
+      height: totalHeight,
+      padding: const EdgeInsets.all(padding),
       decoration: BoxDecoration(
-        color: const Color(0xFF0C1832).withValues(alpha: 0.85),
+        color: const Color(0xFF0B1426),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: AppColors.cardBorder.withValues(alpha: 0.9),
-          width: 1,
+          color: const Color(0xFF1E2D4A),
+          width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
+            color: Colors.black.withValues(alpha: 0.35),
             blurRadius: 10,
-            offset: const Offset(0, 2),
+            offset: const Offset(0, 3),
+          ),
+          BoxShadow(
+            color: AppColors.cyan.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Stack(
         children: [
-          // Globe icon
-          Padding(
-            padding: EdgeInsets.only(
-              left: isCompact ? 5 : 8,
-              right: isCompact ? 3 : 5,
-            ),
-            child: Icon(
-              Icons.language_rounded,
-              color: AppColors.cyan,
-              size: isCompact ? 14 : 16,
+          // Pilule active glissante (animation fluide)
+          AnimatedAlign(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+            alignment: isFr ? Alignment.centerLeft : Alignment.centerRight,
+            child: Container(
+              width: slotWidth,
+              height: slotHeight,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                    AppColors.cyan,
+                    Color(0xFF00B4D8),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(999),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.cyan.withValues(alpha: 0.40),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
             ),
           ),
-          _LangPill(
-            label: 'FR',
-            isSelected: currentLang == AppLanguage.fr,
-            isCompact: isCompact,
-            onTap: () => notifier.setLanguage(AppLanguage.fr),
-          ),
-          _LangPill(
-            label: 'EN',
-            isSelected: currentLang == AppLanguage.en,
-            isCompact: isCompact,
-            onTap: () => notifier.setLanguage(AppLanguage.en),
+
+          // Options texte FR et EN
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildOption(
+                label: 'FR',
+                index: 0,
+                isSelected: isFr,
+                width: slotWidth,
+                height: slotHeight,
+                onTap: () => notifier.setLanguage(AppLanguage.fr),
+              ),
+              _buildOption(
+                label: 'EN',
+                index: 1,
+                isSelected: !isFr,
+                width: slotWidth,
+                height: slotHeight,
+                onTap: () => notifier.setLanguage(AppLanguage.en),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-}
 
-class _LangPill extends StatefulWidget {
-  final String label;
-  final bool isSelected;
-  final bool isCompact;
-  final VoidCallback onTap;
+  Widget _buildOption({
+    required String label,
+    required int index,
+    required bool isSelected,
+    required double width,
+    required double height,
+    required VoidCallback onTap,
+  }) {
+    final isHovered = _hoveredIndex == index;
 
-  const _LangPill({
-    required this.label,
-    required this.isSelected,
-    required this.isCompact,
-    required this.onTap,
-  });
-
-  @override
-  State<_LangPill> createState() => _LangPillState();
-}
-
-class _LangPillState extends State<_LangPill> {
-  bool _hovering = false;
-
-  @override
-  Widget build(BuildContext context) {
     return MouseRegion(
-      onEnter: (_) => setState(() => _hovering = true),
-      onExit: (_) => setState(() => _hovering = false),
+      onEnter: (_) => setState(() => _hoveredIndex = index),
+      onExit: (_) => setState(() => _hoveredIndex = null),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: EdgeInsets.symmetric(
-            horizontal: widget.isCompact ? 8 : 11,
-            vertical: widget.isCompact ? 3 : 5,
-          ),
-          decoration: BoxDecoration(
-            gradient: widget.isSelected
-                ? const LinearGradient(
-                    colors: [AppColors.cyan, Color(0xFF0096B4)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )
-                : null,
-            color: widget.isSelected
-                ? null
-                : (_hovering
-                    ? AppColors.cardHover.withValues(alpha: 0.6)
-                    : Colors.transparent),
-            borderRadius: BorderRadius.circular(999),
-            boxShadow: widget.isSelected
-                ? [
-                    BoxShadow(
-                      color: AppColors.cyan.withValues(alpha: 0.35),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Text(
-            widget.label,
-            style: GoogleFonts.manrope(
-              fontSize: widget.isCompact ? 11 : 12.5,
-              fontWeight:
-                  widget.isSelected ? FontWeight.w800 : FontWeight.w600,
-              color: widget.isSelected
-                  ? const Color(0xFF050B17)
-                  : (_hovering
-                      ? AppColors.text
-                      : AppColors.textMuted),
-              letterSpacing: 0.4,
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: SizedBox(
+          width: width,
+          height: height,
+          child: Center(
+            child: AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 180),
+              style: GoogleFonts.manrope(
+                fontSize: widget.isCompact ? 11.5 : 12.5,
+                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                color: isSelected
+                    ? const Color(0xFF040A14)
+                    : (isHovered
+                        ? AppColors.text
+                        : const Color(0xFF8E9CB2)),
+                letterSpacing: 0.5,
+              ),
+              child: Text(label),
             ),
           ),
         ),
