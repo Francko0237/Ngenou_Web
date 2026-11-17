@@ -1,159 +1,251 @@
-# Ngenou Web — Site Vitrine & Console d'Administration
+<div align="center">
 
-Projet web officiel de l'application mobile **Ngenou**, développé en **Flutter Web** avec **Supabase** comme backend sécurisé. Il combine :
-1. **Un site vitrine moderne et responsive** (`/`, `/nouveautes`, `/confidentialite`).
-2. **Un espace d'administration sécurisé et masqué** (`/admin`, `/admin/login`, `/admin/releases/new`, `/admin/releases/:id/edit`).
-3. **Le kit d'intégration mobile** pour la vérification automatique et manuelle des mises à jour dans l'application mobile Flutter Ngenou.
+<img src="assets/images/logo_full.png" alt="Ngenou Logo" width="120" />
 
----
+# Ngenou Web
 
-## 1. Stack Technique
+**Site vitrine officiel et console d'administration de l'application mobile Ngenou**
 
-- **Framework** : Flutter 3.38+ / Dart 3.10+ (Channel stable, null-safety intégral).
-- **Style & Design** : Material 3 personnalisé, esthétique sombre premium.
-  - Palette officielle : Fond `#060B1A`, Cartes `#0F1A33`, Cyan `#3CC8E8`, Or `#F0B93A`, Texte `#F3EEE2`, Muet `#9BA8C4`.
-  - Typographie : **Fraunces** (titres majeurs), **Manrope** (corps et interface).
-  - Dégradé officiel : Cyan (`#3CC8E8`) → Or (`#F0B93A`) réservé aux mots-clés et CTA majeurs.
-- **Routage** : `go_router` avec stratégie d'URL propre (`usePathUrlStrategy` sans `#`), garde d'authentification et meta-tag `noindex` automatique sur `/admin`.
-- **Gestion d'état** : `flutter_riverpod`.
-- **Backend & Stockage** : Supabase (Auth, PostgreSQL avec Row Level Security, Storage Buckets `release-media` et `apks`).
-- **Déploiement** : Vercel (avec règles de réécriture SPA dans `vercel.json`).
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart)](https://dart.dev)
+[![Supabase](https://img.shields.io/badge/Supabase-Backend-3ECF8E?logo=supabase)](https://supabase.com)
+[![Vercel](https://img.shields.io/badge/Vercel-Déployé-000000?logo=vercel)](https://ngenou.vercel.app)
+[![Licence](https://img.shields.io/badge/Licence-Propriétaire-red)](LICENSE)
+
+🌐 **Site en production** : [ngenou.vercel.app](https://ngenou.vercel.app)
+
+</div>
 
 ---
 
-## 2. Arborescence du Projet
+## À propos de Ngenou
 
-```text
+**Ngenou** est une application mobile d'apprentissage intelligent conçue pour les élèves et étudiants francophones. Elle propose :
+
+- 🤖 **Tuteur IA conversationnel** — Guide pas à pas en maths, physique et informatique, avec dictée vocale et synthèse audio
+- 🏆 **Défis quotidiens et quiz** — Séries de jours consécutifs, QCM avec correction immédiate et badges XP
+- 🧩 **Ngenou Assets** — Catalogue d'extensions pédagogiques légères installables à la demande
+- 📅 **Emploi du temps & alarmes** — Planning hebdomadaire, rappels d'étude, export PDF
+- 📶 **Mode hors-ligne** — Cours, extensions installées, planning et tâches disponibles sans connexion Internet
+
+Ce dépôt contient le **site vitrine Flutter Web** et la **console d'administration** utilisés pour publier les mises à jour de l'APK.
+
+---
+
+## Fonctionnalités du Site
+
+| Section | Route | Accès |
+|---|---|---|
+| Page d'accueil | `/` | Public |
+| Nouveautés & historique des versions | `/nouveautes` | Public |
+| Politique de confidentialité | `/confidentialite` | Public |
+| Console d'administration | `/admin` | 🔒 Admin authentifié |
+| Connexion admin | `/admin/login` | 🔒 Admin |
+| Formulaire de version | `/admin/releases/new` | 🔒 Admin |
+| Édition d'une version | `/admin/releases/:id/edit` | 🔒 Admin |
+
+---
+
+## Stack Technique
+
+```
+Flutter Web 3.x + Dart 3.x
+├── go_router           → Routage URL propre (sans #), gardes d'accès admin
+├── flutter_riverpod    → Gestion d'état globale
+├── supabase_flutter    → Auth, PostgreSQL (RLS), Storage
+├── google_fonts        → Fraunces (titres) + Manrope (corps)
+├── flutter_animate     → Animations d'entrée fluides
+├── url_launcher        → Liens externes (téléchargement APK)
+├── file_picker         → Upload images dans la console admin
+└── cached_network_image → Chargement optimisé des images Supabase
+```
+
+**Déploiement** : Vercel (SPA Flutter Web, build statique `build/web`)  
+**Base de données** : Supabase PostgreSQL avec Row Level Security (RLS)
+
+---
+
+## Design System
+
+| Élément | Valeur |
+|---|---|
+| Fond principal | `#060B1A` |
+| Cartes | `#0F1A33` |
+| Couleur Cyan | `#3CC8E8` |
+| Couleur Or | `#F0B93A` |
+| Texte principal | `#F3EEE2` |
+| Texte secondaire | `#9BA8C4` |
+| Dégradé signature | Cyan `#3CC8E8` → Or `#F0B93A` |
+| Titre principal | **Fraunces** (Google Fonts) |
+| Corps & UI | **Manrope** (Google Fonts) |
+
+---
+
+## Structure du Projet
+
+```
 ngenou_web/
 ├── assets/
-│   ├── images/                # Logos (logo.png, logo_full.png)
-│   └── screenshots/           # Captures d'écran de l'application mobile
+│   ├── images/                   # logo.png, logo_full.png
+│   └── screenshots/              # Captures d'écran de l'app mobile
 ├── lib/
 │   ├── core/
-│   │   ├── models/            # AppRelease, ReleaseFeature
-│   │   ├── supabase/          # SupabaseConfig, ReleaseRepository, AuthRepository, Providers
-│   │   ├── theme/             # AppColors, AppTheme
-│   │   └── widgets/           # SiteNavbar, SiteFooter, PhoneMockup, DownloadButton, Responsive
+│   │   ├── models/               # AppRelease, ReleaseFeature
+│   │   ├── supabase/             # SupabaseConfig, ReleaseRepository,
+│   │   │                         # AuthRepository, Providers Riverpod
+│   │   ├── theme/                # AppColors, AppTheme
+│   │   └── widgets/              # SiteNavbar, SiteFooter, PhoneMockup,
+│   │                             # DualPhoneMockup, DownloadButton, Responsive
 │   ├── features/
 │   │   ├── public/
-│   │   │   ├── home/          # Hero, Showcase à onglets, Bento grid, CTA, FAQ
-│   │   │   ├── nouveautes/    # Historique des versions et fonctionnalités publiées
-│   │   │   └── confidentialite/# Politique de confidentialité & CGU (Offline-First)
+│   │   │   ├── home/             # Hero, Showcase tabs, Bento grid, CTA, FAQ
+│   │   │   ├── nouveautes/       # Historique des versions publiées
+│   │   │   └── confidentialite/  # Politique de confidentialité & CGU
 │   │   └── admin/
-│   │       ├── auth/          # Écran de connexion sécurisé avec protection anti-bruteforce
-│   │       ├── dashboard/     # Tableau de bord : liste, recherche, tri, publication
-│   │       └── release_form/  # Création/édition version, upload APK et images (<1 Mo)
-│   ├── routes/                # GoRouter et gardes d'accès admin
-│   └── main.dart              # Point d'entrée de l'application
-├── mobile_integration/        # Code prêt à intégrer dans l'app mobile Ngenou
+│   │       ├── auth/             # Connexion admin + protection anti-bruteforce
+│   │       ├── dashboard/        # Liste versions, recherche, tri, publication
+│   │       └── release_form/     # Création/édition version, upload APK & images
+│   ├── routes/                   # GoRouter avec gardes admin
+│   └── main.dart
+├── mobile_integration/           # Code prêt à intégrer dans l'app mobile
 │   ├── update_checker_service.dart
 │   ├── update_dialog.dart
 │   └── parametres_update_tile.dart
 ├── web/
-│   ├── index.html             # En-tête HTML, polices Google Fonts, script noindex /admin
-│   ├── robots.txt             # Disallow: /admin
-│   ├── sitemap.xml            # Sitemap public excluant /admin
-│   └── favicon.png            # Favicon officiel Ngenou
-├── supabase_migration.sql     # Script SQL complet de migration Supabase + RLS
-├── vercel.json                # Configuration des rewrites et en-têtes HTTP pour Vercel
+│   ├── index.html                # HTML principal, preload des assets critiques
+│   ├── robots.txt                # Disallow: /admin
+│   ├── sitemap.xml               # Sitemap public
+│   └── favicon.png
+├── build/web/                    # Build de production Flutter Web (commité)
+│   └── vercel.json               # Config SPA routing Vercel
+├── supabase_migration.sql        # Migration SQL complète (tables + RLS + buckets)
+├── vercel.json                   # Config Vercel racine
 └── pubspec.yaml
 ```
 
 ---
 
-## 3. Configuration de Supabase
+## Installation & Développement Local
 
-### A. Exécution du script de migration SQL
-Dans votre tableau de bord Supabase (**SQL Editor**) ou via la CLI Supabase, exécutez l'intégralité du fichier [`supabase_migration.sql`](file:///home/hell-francko/Documents/Projet/Ngenou/ngenou_web/supabase_migration.sql).
+### Prérequis
 
-Ce script :
-1. Crée les tables `app_releases`, `release_features` et `admin_users`.
-2. Active les politiques de sécurité **RLS** :
-   - Lecture publique réservée aux versions avec `is_published = true`.
-   - Écriture (création, mise à jour, suppression) strictement réservée aux utilisateurs présents dans `admin_users`.
-3. Configure les buckets publics de stockage `release-media` et `apks`, et réserve le droit d'upload aux administrateurs.
-4. Insère un jeu de données de départ (version 1.1.0).
+- Flutter SDK `>=3.0.0` ([installer Flutter](https://flutter.dev/docs/get-started/install))
+- Un projet Supabase configuré (voir section [Configuration Supabase](#configuration-supabase))
+- Un navigateur Chrome/Chromium
 
-### B. Désactivation de l'inscription publique
-Pour empêcher toute inscription non autorisée :
-1. Rendez-vous dans **Authentication > Configuration > Sign Up**.
-2. Décochez **« Allow new users to sign up »**.
+### 1. Cloner et installer les dépendances
 
-### C. Création du premier administrateur
-1. Dans Supabase, rendez-vous dans **Authentication > Users** et cliquez sur **« Add user »** (ou invitez votre adresse email administrateur, ex. `admin@ngenou.top`).
-2. Récupérez l'identifiant unique (UUID) de l'utilisateur créé.
-3. Dans le **SQL Editor**, insérez cet UUID dans la table `admin_users` :
-   ```sql
-   INSERT INTO public.admin_users (user_id)
-   VALUES ('VOTRE_UUID_UTILISATEUR_ICI');
-   ```
-
----
-
-## 4. Lancement Local & Compilation
-
-### Dépendances
 ```bash
-cd ngenou_web
+git clone https://github.com/Francko0237/Ngenou_Web.git
+cd Ngenou_Web
 flutter pub get
 ```
 
-### Lancement en développement local
-Pour lancer le site avec vos clés Supabase :
+### 2. Lancer en développement
+
 ```bash
 flutter run -d chrome \
   --dart-define=SUPABASE_URL=https://votre-projet.supabase.co \
   --dart-define=SUPABASE_ANON_KEY=votre_cle_anon_publique
 ```
 
-> **Note de sécurité** : Ne renseignez **JAMAIS** la clé `service_role` dans le client web. Seule la clé `anon` (publique) doit être injectée.
+> **Clés par défaut** : Le projet contient des clés Supabase de développement codées en dur dans `supabase_config.dart`. Vous pouvez les utiliser directement pour tester sans les `--dart-define`.
 
-### Compilation pour la production (Release)
-La commande suivante active les optimisations de chargement, le tree-shaking des icônes (réduction de 99% du poids des polices) :
+### 3. Compiler pour la production
+
 ```bash
 flutter build web --release \
   --dart-define=SUPABASE_URL=https://votre-projet.supabase.co \
   --dart-define=SUPABASE_ANON_KEY=votre_cle_anon_publique
 ```
-Les fichiers générés se trouvent dans le dossier `build/web/`.
+
+Les fichiers générés se trouvent dans `build/web/`.
+
+> ⚠️ **Sécurité** : N'utilisez **jamais** la clé `service_role` dans le client web. Seule la clé `anon` (publique) doit être exposée côté client.
 
 ---
 
-## 5. Déploiement sur Vercel & Domaine ngenou.top
+## Configuration Supabase
 
-Le fichier [`vercel.json`](file:///home/hell-francko/Documents/Projet/Ngenou/ngenou_web/vercel.json) est déjà configuré à la racine pour rediriger toutes les routes vers `index.html` (support du Single Page Application), interdire l'indexation des URL d'administration avec l'en-tête `X-Robots-Tag: noindex, nofollow`, et mettre en cache les assets statiques.
+### 1. Exécuter la migration SQL
 
-### Déploiement via Vercel CLI ou GitHub
-1. Connectez le dépôt à votre compte [Vercel](https://vercel.com).
-2. Dans les paramètres de build du projet Vercel (**Build and Output Settings**) :
+Dans le **SQL Editor** de votre tableau de bord Supabase, exécutez le contenu du fichier [`supabase_migration.sql`](supabase_migration.sql).
+
+Ce script crée :
+- Les tables `app_releases`, `release_features`, `profiles`
+- Les politiques **Row Level Security (RLS)** :
+  - Lecture publique des versions `is_published = true` uniquement
+  - Écriture (création, modification, suppression) réservée aux admins
+- Les buckets de stockage `release-media` et `apks`
+- Un jeu de données initial (version 1.1.0)
+
+### 2. Désactiver l'inscription publique
+
+Dans Supabase → **Authentication > Configuration > Sign Up**  
+→ Décochez **« Allow new users to sign up »**
+
+### 3. Créer le premier administrateur
+
+```sql
+-- 1. Créer l'utilisateur dans Authentication > Users > Add user
+-- 2. Récupérer son UUID, puis exécuter dans le SQL Editor :
+
+UPDATE public.profiles
+SET role = 'admin'
+WHERE id = 'VOTRE_UUID_UTILISATEUR';
+```
+
+---
+
+## Déploiement sur Vercel
+
+Le projet est configuré pour être déployé **en tant que site statique** depuis le dossier `build/web/`.
+
+### Option A — Déploiement automatique via GitHub (recommandé)
+
+1. Connecter le dépôt GitHub à [Vercel](https://vercel.com/new)
+2. Dans **Build & Output Settings** :
    - **Framework Preset** : `Other`
-   - **Build Command** :
-     ```bash
-     flutter/bin/flutter build web --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
-     ```
+   - **Build Command** : *(laisser vide — le build Flutter est commité)*
    - **Output Directory** : `build/web`
-3. Dans **Settings > Environment Variables**, ajoutez :
-   - `SUPABASE_URL` = `https://votre-projet.supabase.co`
-   - `SUPABASE_ANON_KEY` = `votre_cle_anon_publique`
-4. *(Alternative simple)* : Vous pouvez compiler localement (`flutter build web --release ...`) et déployer le dossier `build/web` directement avec `vercel --prod build/web`.
+3. Cliquer sur **Deploy**
 
-### Configuration du domaine `ngenou.top`
-1. Dans votre projet Vercel, accédez à **Settings > Domains**.
-2. Ajoutez le domaine `ngenou.top` ainsi que `www.ngenou.top`.
-3. Chez votre registrar DNS (ex. Cloudflare, Namecheap, OVH), ajoutez les enregistrements indiqués par Vercel :
-   - Enregistrement **A** : `@` → `76.76.21.21`
-   - Enregistrement **CNAME** : `www` → `cname.vercel-dns.com`
+### Option B — Déploiement manuel avec la CLI
+
+```bash
+# Installer Vercel CLI
+npm i -g vercel
+
+# Builder localement
+flutter build web --release
+
+# Déployer le répertoire de sortie
+vercel build/web --prod
+```
+
+### Gestion du routing SPA
+
+Le fichier `build/web/vercel.json` contient les règles de réécriture qui redirigent toutes les routes vers `index.html`, permettant à GoRouter de gérer la navigation côté client :
+
+```json
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
+```
 
 ---
 
-## 6. Intégration dans l'Application Mobile Ngenou
+## Intégration dans l'Application Mobile
 
-Les fichiers prêts à l'emploi sont situés dans le dossier [`mobile_integration/`](file:///home/hell-francko/Documents/Projet/Ngenou/ngenou_web/mobile_integration/) :
+Le dossier [`mobile_integration/`](mobile_integration/) contient les fichiers prêts à copier dans l'application mobile Flutter pour gérer les mises à jour automatiques.
 
-### A. Vérification silencieuse au lancement (1 fois par jour)
-Dans votre `main.dart` ou `app.dart` mobile (après l'initialisation de Supabase et l'affichage de la première page) :
+### Vérification au démarrage (1 fois par jour)
+
 ```dart
-import 'package:ngenou/mobile_integration/update_checker_service.dart';
+// Dans votre main.dart ou écran principal :
+import 'mobile_integration/update_checker_service.dart';
 
 @override
 void initState() {
@@ -164,27 +256,61 @@ void initState() {
 }
 ```
 
-### B. Bouton de vérification dans les Paramètres
-Dans votre `parametres_page.dart` mobile, insérez le widget :
-```dart
-import 'package:ngenou/mobile_integration/parametres_update_tile.dart';
+### Widget dans les Paramètres
 
-// À insérer dans votre ListView de paramètres :
+```dart
+import 'mobile_integration/parametres_update_tile.dart';
+
+// Dans votre ListView de paramètres :
 const ParametresUpdateTile(
   currentVersionName: '1.1.0',
   currentVersionCode: 11,
 ),
 ```
 
-### C. Comportement des mises à jour
-- **Mise à jour standard** : L'utilisateur voit la liste des nouveautés et peut choisir « Télécharger » (ouvre le site `https://ngenou.top/nouveautes`) ou « Plus tard ».
-- **Mise à jour obligatoire (`force_update = true`)** : La boîte de dialogue est non-fermable (le bouton retour et l'arrière-plan sont désactivés) ; seul le bouton « Télécharger » est disponible.
+### Comportement des mises à jour
+
+| Type | Description |
+|---|---|
+| **Mise à jour standard** | Boîte de dialogue avec les nouveautés, bouton « Télécharger » et « Plus tard » |
+| **Mise à jour obligatoire** (`force_update: true`) | Boîte de dialogue non-fermable, seul le téléchargement est disponible |
 
 ---
 
-## 7. Sécurité & Bonnes Pratiques
+## Sécurité
 
-- **Masquage d'URL** : La route `/admin` ne figure dans aucun lien public, ni dans le `sitemap.xml`, ni dans `robots.txt`.
-- **Protection par rôle (RLS)** : Même si un internaute découvre l'URL `/admin`, les requêtes vers Supabase sont rejetées au niveau du moteur PostgreSQL grâce aux politiques Row Level Security basées sur la table `admin_users`.
-- **Anti-Brute Force** : L'écran de connexion administrateur verrouille automatiquement le formulaire après 5 tentatives infructueuses.
-- **Règles de contenu public** : Aucune mention de nom de technologie backend ou d'infrastructure (Supabase) n'apparaît sur les pages publiques. Le support est centralisé sur `ngenou.support@gmail.com`.
+| Mesure | Implémentation |
+|---|---|
+| **URL admin masquée** | Absent du sitemap, robots.txt, et de tous les liens publics |
+| **Row Level Security** | Toutes les requêtes Supabase sont filtrées au niveau PostgreSQL |
+| **Anti-bruteforce** | Verrouillage du formulaire de connexion après 5 tentatives échouées |
+| **Noindex automatique** | Meta-tag `robots: noindex, nofollow` injecté sur `/admin/*` |
+| **En-têtes HTTP** | `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` |
+| **Clé anon uniquement** | La clé `service_role` Supabase n'est jamais exposée côté client |
+
+---
+
+## Téléchargement de l'APK
+
+La dernière version de l'application est disponible sur :  
+👉 [ngenou.vercel.app](https://ngenou.vercel.app) → Bouton **Télécharger**
+
+Les releases sont également disponibles sur [GitHub Releases](https://github.com/Francko0237/Ngenou_Web/releases).
+
+---
+
+## Contact & Support
+
+- 📧 **Support** : ngenou.support@gmail.com
+- 🌐 **Site officiel** : [ngenou.vercel.app](https://ngenou.vercel.app)
+- 📱 **Application** : Android (APK direct — compatible 32-bit et 64-bit)
+
+---
+
+<div align="center">
+
+**Ngenou** — *Votre tuteur IA d'apprentissage intelligent*
+
+© 2024-2025 Ngenou. Tous droits réservés.
+
+</div>
