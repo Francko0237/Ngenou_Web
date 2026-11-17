@@ -309,7 +309,7 @@ Les releases sont également disponibles sur [GitHub Releases](https://github.co
 
 <div align="center">
 
-**Ngenou** — *Votre tuteur IA d'apprentissage intelligent*
+**Ngenou** — *L'apprentissage intelligent dont vous êtes le maître*
 
 © 2024-2025 Ngenou. Tous droits réservés.
 
