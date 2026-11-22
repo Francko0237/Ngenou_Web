@@ -128,7 +128,7 @@ class DownloadArchitectureDialog extends StatelessWidget {
             border: Border.all(color: const Color(0xFF1E2E52), width: 1.5),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 blurRadius: 40,
                 offset: const Offset(0, 16),
               ),
@@ -145,7 +145,7 @@ class DownloadArchitectureDialog extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.cyan.withOpacity(0.12),
+                      color: AppColors.cyan.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Icon(
@@ -223,7 +223,7 @@ class DownloadArchitectureDialog extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 11.5,
-                    color: AppColors.textMuted.withOpacity(0.75),
+                    color: AppColors.textMuted.withValues(alpha: 0.75),
                     fontStyle: FontStyle.italic,
                   ),
                 ),
@@ -272,8 +272,8 @@ class _VersionCardState extends State<_VersionCard> {
 
     // Couleurs selon recommandation et hover
     final borderColor = isRec
-        ? (_isHovered ? AppColors.success : AppColors.success.withOpacity(0.55))
-        : (_isHovered ? AppColors.cyan.withOpacity(0.6) : const Color(0xFF1E2E52));
+        ? (_isHovered ? AppColors.success : AppColors.success.withValues(alpha: 0.55))
+        : (_isHovered ? AppColors.cyan.withValues(alpha: 0.6) : const Color(0xFF1E2E52));
 
     final bgColor = isRec
         ? (_isHovered ? const Color(0xFF142442) : const Color(0xFF101C38))
@@ -295,7 +295,7 @@ class _VersionCardState extends State<_VersionCard> {
             boxShadow: isRec
                 ? [
                     BoxShadow(
-                      color: AppColors.success.withOpacity(_isHovered ? 0.22 : 0.10),
+                      color: AppColors.success.withValues(alpha: _isHovered ? 0.22 : 0.10),
                       blurRadius: _isHovered ? 18 : 12,
                       offset: const Offset(0, 4),
                     ),
@@ -303,7 +303,7 @@ class _VersionCardState extends State<_VersionCard> {
                 : [
                     if (_isHovered)
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
+                        color: Colors.black.withValues(alpha: 0.25),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -315,8 +315,8 @@ class _VersionCardState extends State<_VersionCard> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: isRec
-                      ? AppColors.success.withOpacity(0.12)
-                      : Colors.white.withOpacity(0.05),
+                      ? AppColors.success.withValues(alpha: 0.12)
+                      : Colors.white.withValues(alpha: 0.05),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -349,10 +349,10 @@ class _VersionCardState extends State<_VersionCard> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: AppColors.success.withOpacity(0.15),
+                              color: AppColors.success.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: AppColors.success.withOpacity(0.35),
+                                color: AppColors.success.withValues(alpha: 0.35),
                                 width: 1,
                               ),
                             ),
@@ -385,7 +385,7 @@ class _VersionCardState extends State<_VersionCard> {
                       widget.option.subtitle,
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textMuted.withOpacity(0.9),
+                        color: AppColors.textMuted.withValues(alpha: 0.9),
                         height: 1.3,
                       ),
                     ),
@@ -397,7 +397,7 @@ class _VersionCardState extends State<_VersionCard> {
                 Icons.arrow_forward_rounded,
                 color: isRec
                     ? AppColors.success
-                    : (_isHovered ? AppColors.text : AppColors.textMuted.withOpacity(0.5)),
+                    : (_isHovered ? AppColors.text : AppColors.textMuted.withValues(alpha: 0.5)),
                 size: 18,
               ),
             ],

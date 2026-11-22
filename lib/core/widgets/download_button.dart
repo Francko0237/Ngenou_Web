@@ -1,11 +1,11 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../localization/app_strings.dart';
 import '../models/app_release.dart';
 import '../supabase/providers.dart';
 import '../theme/app_colors.dart';
+import 'download_architecture_dialog.dart';
 
 /// Bouton de téléchargement de l'APK Ngenou avec micro-interactions au survol
 class DownloadButton extends ConsumerStatefulWidget {
@@ -25,59 +25,13 @@ class DownloadButton extends ConsumerStatefulWidget {
 class _DownloadButtonState extends ConsumerState<DownloadButton> {
   bool _isHovered = false;
 
-  static const String defaultApkUrl =
-      'https://github.com/Francko0237/Ngenou_Web/releases/latest/download/Ngenou.apk';
-
   Future<void> _launchDownload(
       BuildContext context, AppRelease? release, AppStrings strings) async {
-    final apkUrl = release?.apkUrl?.isNotEmpty == true
-        ? release!.apkUrl!
-        : defaultApkUrl;
-
-    final uri = Uri.parse(apkUrl);
-    try {
-      final launched = await launchUrl(
-        uri,
-        mode: LaunchMode.platformDefault,
-        webOnlyWindowName: '_self',
-      );
-
-      if (context.mounted) {
-        if (launched) {
-          widget.onDownloaded?.call();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.check_circle_rounded,
-                      color: Colors.greenAccent, size: 20),
-                  const SizedBox(width: 10),
-                  Text(strings.downloadStartedSuccess),
-                ],
-              ),
-              backgroundColor: const Color(0xFF0D172A),
-              duration: const Duration(seconds: 4),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(strings.downloadFailed),
-              backgroundColor: AppColors.error,
-            ),
-          );
-        }
-      }
-    } catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(strings.downloadError),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-    }
+    await DownloadArchitectureDialog.show(
+      context,
+      release: release,
+      onDownloaded: widget.onDownloaded,
+    );
   }
 
   @override
