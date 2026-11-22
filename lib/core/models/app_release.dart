@@ -8,6 +8,9 @@ class AppRelease {
   final String title;
   final String notes;
   final String? apkUrl;
+  final String? apkUrlArm64;
+  final String? apkUrlArm32;
+  final String? windowsUrl;
   final bool forceUpdate;
   final bool isPublished;
   final DateTime? publishedAt;
@@ -21,6 +24,9 @@ class AppRelease {
     required this.title,
     required this.notes,
     this.apkUrl,
+    this.apkUrlArm64,
+    this.apkUrlArm32,
+    this.windowsUrl,
     this.forceUpdate = false,
     this.isPublished = false,
     this.publishedAt,
@@ -39,6 +45,9 @@ class AppRelease {
       title: json['title'] as String? ?? '',
       notes: json['notes'] as String? ?? '',
       apkUrl: json['apk_url'] as String?,
+      apkUrlArm64: json['apk_url_arm64'] as String?,
+      apkUrlArm32: json['apk_url_arm32'] as String?,
+      windowsUrl: json['windows_url'] as String?,
       forceUpdate: json['force_update'] as bool? ?? false,
       isPublished: json['is_published'] as bool? ?? false,
       publishedAt: json['published_at'] != null
@@ -58,6 +67,9 @@ class AppRelease {
       'title': title,
       'notes': notes,
       'apk_url': apkUrl,
+      'apk_url_arm64': apkUrlArm64,
+      'apk_url_arm32': apkUrlArm32,
+      'windows_url': windowsUrl,
       'force_update': forceUpdate,
       'is_published': isPublished,
       'published_at': publishedAt?.toIso8601String(),
@@ -66,6 +78,34 @@ class AppRelease {
       map['id'] = id;
     }
     return map;
+  }
+
+  String get effectiveArm64Url {
+    if (apkUrlArm64 != null && apkUrlArm64!.isNotEmpty) return apkUrlArm64!;
+    if (apkUrl != null && apkUrl!.isNotEmpty) {
+      if (apkUrl!.contains('.apk')) {
+        return apkUrl!.replaceAll('.apk', '-arm64.apk');
+      }
+      return apkUrl!;
+    }
+    if (versionName.isNotEmpty) {
+      return 'https://github.com/Francko0237/Ngenou_Web/releases/download/v$versionName/ngenou-v$versionName-arm64.apk';
+    }
+    return 'https://github.com/Francko0237/Ngenou_Web/releases/latest/download/ngenou-arm64.apk';
+  }
+
+  String get effectiveArm32Url {
+    if (apkUrlArm32 != null && apkUrlArm32!.isNotEmpty) return apkUrlArm32!;
+    if (apkUrl != null && apkUrl!.isNotEmpty) {
+      if (apkUrl!.contains('.apk')) {
+        return apkUrl!.replaceAll('.apk', '-arm32.apk');
+      }
+      return apkUrl!;
+    }
+    if (versionName.isNotEmpty) {
+      return 'https://github.com/Francko0237/Ngenou_Web/releases/download/v$versionName/ngenou-v$versionName-arm32.apk';
+    }
+    return 'https://github.com/Francko0237/Ngenou_Web/releases/latest/download/ngenou-arm32.apk';
   }
 
   AppRelease copyWith({
